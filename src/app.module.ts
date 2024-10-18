@@ -8,10 +8,12 @@ import configuration from './settings/configuration';
 import { AuthModule } from './features/auth/auth.module';
 import { UsersModule } from './features/users/users.module';
 import { TestingModule } from './features/testing/testing.module';
+import { SecurityModule } from './features/security/security.module';
 
 const modules = [
   AuthModule,
   UsersModule,
+  SecurityModule,
   TestingModule
 ]
 
