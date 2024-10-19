@@ -18,7 +18,7 @@ export const applyAppSettings = (app: INestApplication) => {
 
   setAppExceptionsFilters(app);
 
-  // app.use(cookieParser());
+  app.use(cookieParser());
 };
 
 const setAppPipes = (app: INestApplication) => {

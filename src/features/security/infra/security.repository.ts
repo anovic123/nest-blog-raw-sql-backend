@@ -50,13 +50,14 @@ export class SecurityRepository {
 
   public async insertNewUserDevice(data: AuthDevice): Promise<void> {
     const query = `
-    INSERT INTO "devices" (user_id, device_id, ip, exp, device_name)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO "devices" (id, user_id, device_id, ip, exp, device_name)
+    VALUES ($1, $2, $3, $4, $5, $6)
   `;
 
-    const { user_id, device_id, ip, exp, device_name } = data;
+    const { id, user_id, device_id, ip, exp, device_name } = data;
 
     await this.dataSource.query(query, [
+      id,
       user_id,
       device_id,
       ip,

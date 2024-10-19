@@ -26,7 +26,7 @@ export class SecurityService {
     }
 
     const checkDeviceUser = await this.securityRepository.checkUserDeviceById(
-      +userId,
+      userId,
       deviceId,
     );
 
@@ -38,10 +38,10 @@ export class SecurityService {
   }
 
   public async deleteAllSessions(userId: string, deviceId: string) {
-    await this.securityRepository.deleteAllSessions(+userId, deviceId);
+    await this.securityRepository.deleteAllSessions(userId, deviceId);
   }
 
   public async getAllDevicesSessions(userId: string, deviceId: string) {
-    return this.securityQueryRepository.findSessionsByUserId(+userId);
+    return this.securityQueryRepository.findSessionsByUserId(userId);
   }
 }

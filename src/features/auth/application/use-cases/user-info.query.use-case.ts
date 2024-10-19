@@ -1,12 +1,12 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { UserInfoOutputModel } from '../models/output/user-info.output.model';
+import { UserInfoOutputModel } from '../../api/models/output/user-info.output.model';
 
 import { UsersRepository } from '../../../users/infra/users.repository';
 
 export class GetUserInfoQuery {
-  constructor(public readonly id: number) {}
+  constructor(public readonly id: string) {}
 }
 
 @QueryHandler(GetUserInfoQuery)

@@ -1,7 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 export class AuthDevicesDB {
-  id: number;
+  id: string;
   user_id: number;
   device_id: string;
   ip: string;
@@ -11,10 +11,10 @@ export class AuthDevicesDB {
 
 @Entity('devices')
 export class AuthDevice {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ type: "integer", nullable: false })
+  @Column({ type: "varchar", nullable: false })
   user_id: string
 
   @Column({ type: "varchar", nullable: false })

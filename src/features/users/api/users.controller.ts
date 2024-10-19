@@ -9,7 +9,7 @@ import { PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagi
 
 import { UsersQueryRepository } from '../infra/users-query.repository';
 
-import { CreateUserCommand } from '../../auth/api/use-cases/create-users.use-case';
+import { CreateUserCommand } from '../../auth/application/use-cases/create-users.use-case';
 
 import { SortingPropertiesType } from '../../../base/types/sorting-properties.type';
 import { DeleteUserCommand } from '../application/use-cases/delete-users.use-case';
@@ -18,7 +18,7 @@ export const USERS_SORTING_PROPERTIES: SortingPropertiesType<UserOutputModel> =
   ['login', 'email'];
 
 @UseGuards(BasicAuthGuard)
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private readonly usersQueryRepository: UsersQueryRepository,

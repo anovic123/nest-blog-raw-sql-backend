@@ -11,17 +11,18 @@ export class AuthRepository {
   ) {
   }
 
-  public async createUser(user: Omit<User, 'id' | 'isConfirmed'>): Promise<UserOutputModel> {
+  public async createUser(user: Omit<User, 'isConfirmed'>): Promise<UserOutputModel> {
     const query = `
       INSERT INTO "users"
-      (email, "passwordHash", "expirationDate", "createdAt", login, "confirmationCode")
-      VALUES ($1, $2, $3, $4, $5, $6)
+      (id, email, "passwordHash", "expirationDate", "createdAt", login, "confirmationCode")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id
     `;
 
     const result = await this.dataSource.query(
       query,
       [
+        user.id,
         user.email,
         user.passwordHash,
         user.expirationDate,

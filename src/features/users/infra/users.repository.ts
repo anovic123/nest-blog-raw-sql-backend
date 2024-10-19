@@ -43,7 +43,7 @@ export class UsersRepository {
   }
 
   public async updateUserPasswordHash(
-    id: number,
+    id: string,
     newPasswordHash: string
   ): Promise<boolean> {
     const query = `
@@ -53,17 +53,21 @@ export class UsersRepository {
     return !!res[1]
   }
 
-  public async updateConfirmation (id: User['id']): Promise<boolean> {
+  public async updateConfirmation(id: User['id']): Promise<boolean> {
     const query = `
-    UPDATE "users SET "isConfirmed" = true WHERE id = $1`
+    UPDATE "users" 
+    SET "isConfirmed" = true 
+    WHERE "id" = $1
+  `;
 
-    const res = await this.datasource.query(query, [id])
+    const result = await this.datasource.query(query, [id]);
 
-    return !!res[1]
+    return result.rowCount > 0;
   }
 
+
   public async updateUserConfirmationCode(
-    id: number,
+    id: string,
     newCode: string
   ): Promise<boolean> {
     const expirationDate = add(

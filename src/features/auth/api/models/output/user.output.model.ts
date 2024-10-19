@@ -1,5 +1,5 @@
 export class UserOutputModel {
-  id: number;
+  id: string;
   login: string;
   email: string;
   createdAt: string;

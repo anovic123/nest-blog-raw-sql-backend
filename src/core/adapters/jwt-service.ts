@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-// import { SecurityRepository } from '../../features/security/infra/security.repository';
+import { SecurityRepository } from '../../features/security/infra/security.repository';
+import { User } from '../../features/users/domain/users.entity';
 
 export interface JwtPayloadExtended extends JwtPayload {
   userId: string;
@@ -25,7 +26,7 @@ export class JwtService {
   private readonly JWT_SECRET: string;
   private readonly EXPIRES_ACCESS_TOKEN: string;
   private readonly EXPIRES_REFRESH_TOKEN: string;
-  // private readonly securityRepository: SecurityRepository;
+  private readonly securityRepository: SecurityRepository;
 
   constructor(private readonly configService: ConfigService) {
     this.JWT_SECRET = this.configService.get('jwtSettings.JWT_SECRET', {
@@ -46,7 +47,7 @@ export class JwtService {
   }
 
   public async createJWT(
-    userId: string,
+    userId: User['id'],
     deviceId: string = '0',
   ): Promise<JwtTokensOutput | null> {
     try {
@@ -73,13 +74,13 @@ export class JwtService {
     }
   }
 
-  public _signAccessToken(userId: string): string {
+  public _signAccessToken(userId: User['id']): string {
     return jwt.sign({ userId }, this.JWT_SECRET, {
       expiresIn: this.EXPIRES_ACCESS_TOKEN,
     });
   }
 
-  public _signRefreshToken(userId: string, deviceId: string): string {
+  public _signRefreshToken(userId: User['id'], deviceId: string): string {
     return jwt.sign({ userId, deviceId }, this.JWT_SECRET, {
       expiresIn: this.EXPIRES_REFRESH_TOKEN,
     });
@@ -101,23 +102,23 @@ export class JwtService {
       return null;
     }
   }
-  // public async getDataFromRefreshToken(
-  //   refreshToken: string,
-  //   findSessionByDeviceId: (deviceId: string) => Promise<any | null>,
-  // ): Promise<{ userId: string; deviceId: string } | null> {
-  //   const decodedRefresh =
-  //     await this.verifyToken<JwtRefreshPayloadExtended>(refreshToken);
-  //   if (!decodedRefresh) return null;
-  //
-  //   console.log(decodedRefresh);
-  //   const deviceData = await findSessionByDeviceId(decodedRefresh.deviceId);
-  //   if (!deviceData) return null;
-  //
-  //   const isTokenExpired =
-  //     decodedRefresh.exp &&
-  //     new Date(decodedRefresh.exp * 1000) < new Date(deviceData.lastActiveDate);
-  //   if (isTokenExpired) return null;
-  //
-  //   return { userId: decodedRefresh.userId, deviceId: decodedRefresh.deviceId };
-  // }
+  public async getDataFromRefreshToken(
+    refreshToken: string,
+    findSessionByDeviceId: (deviceId: string) => Promise<any | null>,
+  ): Promise<{ userId: string; deviceId: string } | null> {
+    const decodedRefresh =
+      await this.verifyToken<JwtRefreshPayloadExtended>(refreshToken);
+    if (!decodedRefresh) return null;
+
+    console.log(decodedRefresh);
+    const deviceData = await findSessionByDeviceId(decodedRefresh.deviceId);
+    if (!deviceData) return null;
+
+    const isTokenExpired =
+      decodedRefresh.exp &&
+      new Date(decodedRefresh.exp * 1000) < new Date(deviceData.lastActiveDate);
+    if (isTokenExpired) return null;
+
+    return { userId: decodedRefresh.userId, deviceId: decodedRefresh.deviceId };
+  }
 }

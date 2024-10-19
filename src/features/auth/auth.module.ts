@@ -1,24 +1,39 @@
 import { Module } from '@nestjs/common';
+
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { AdaptersModule } from '../../core/adapters/adapters.module';
 import { AuthController } from './api/auth.controller';
-import { AuthRepository } from './infra/auth.repository';
-import { CreateUserUseCase } from './api/use-cases/create-users.use-case';
-import { EmailIsExistConstraint, LoginIsExistConstraint } from '../../core/decorators';
-import { UsersRepository } from '../users/infra/users.repository';
-import { GetUserInfoHandler } from './api/use-cases/user-info.query.use-case';
+
 import { AuthService } from './application/auth.service';
+
 import { UsersQueryRepository } from '../users/infra/users-query.repository';
-import { ResendCodeCommandUseCase } from './api/use-cases/resend-code.use-case';
-import { ConfirmEmailUseCase } from './api/use-cases/confirm-email.use-case';
-import { NewPasswordUseCase } from './api/use-cases/new-password.use-case';
-import { PasswordRecoveryUseCase } from './api/use-cases/password-recovery.use-case';
+import { UsersRepository } from '../users/infra/users.repository';
+
+import {
+  EmailIsExistConstraint,
+  LoginIsExistConstraint,
+} from 'src/core/decorators';
+
+import { AdaptersModule } from 'src/core/adapters/adapters.module';
+
+import { AuthRepository } from './infra/auth.repository';
+
+import { GetUserInfoHandler } from './application/use-cases/user-info.query.use-case';
+import { ResendCodeCommandUseCase } from './application/use-cases/resend-code.use-case';
+import { ConfirmEmailUseCase } from './application/use-cases/confirm-email.use-case';
+import { NewPasswordUseCase } from './application/use-cases/new-password.use-case';
+import { PasswordRecoveryUseCase } from './application/use-cases/password-recovery.use-case';
+import { SecurityModule } from '../security/security.module';
+import { LogoutUserUseCase } from './application/use-cases/logout-user.use-case';
+import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { CreateSessionUseCase } from './application/use-cases/create-session';
+import { CreateUserUseCase } from './application/use-cases/create-users.use-case';
 
 @Module({
   imports: [
     AdaptersModule,
-    CqrsModule
+    CqrsModule,
+    SecurityModule
   ],
   providers: [
     ResendCodeCommandUseCase,
@@ -26,13 +41,16 @@ import { PasswordRecoveryUseCase } from './api/use-cases/password-recovery.use-c
     ConfirmEmailUseCase,
     NewPasswordUseCase,
     PasswordRecoveryUseCase,
+    LogoutUserUseCase,
+    RefreshTokenUseCase,
+    CreateSessionUseCase,
     GetUserInfoHandler,
     AuthService,
     AuthRepository,
     UsersQueryRepository,
     EmailIsExistConstraint,
     LoginIsExistConstraint,
-    UsersRepository
+    UsersRepository,
   ],
   controllers: [AuthController],
   exports: [AuthService]

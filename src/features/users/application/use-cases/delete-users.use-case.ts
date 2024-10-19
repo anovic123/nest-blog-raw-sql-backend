@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { UsersRepository } from '../../infra/users.repository';
+import { NotFoundException } from '@nestjs/common';
 
 export class DeleteUserCommand {
   constructor(public readonly id: string) {}
@@ -12,6 +13,12 @@ export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
 
   async execute(command: DeleteUserCommand) {
     const { id } = command;
+
+    const user = await this.usersRepository.findUserById(id);
+
+    if (!user) {
+      throw new NotFoundException()
+    }
 
     return this.usersRepository.deleteUser(id);
   }

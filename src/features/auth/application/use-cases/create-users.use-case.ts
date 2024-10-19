@@ -8,7 +8,7 @@ import { CryptoService } from '../../../../core/adapters/crypto-service';
 import { AuthRepository } from '../../infra/auth.repository';
 import { EmailsManager } from '../../../../core/adapters/email.manager';
 import { User } from '../../../users/domain/users.entity';
-import { UserOutputModel } from '../models/output/user.output.model';
+import { UserOutputModel } from '../../api/models/output/user.output.model';
 
 class UserInputModel {
   login: string;
@@ -34,7 +34,8 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
 
     const passwordHash = await this.cryptoService.generateHash(password)
 
-    const user: Omit<User, 'id' | 'isConfirmed'> = {
+    const user: Omit<User, 'isConfirmed'> = {
+      id: uuidv4(),
       email,
       login,
       passwordHash,
