@@ -13,10 +13,6 @@ export class SecurityService {
     private readonly securityQueryRepository: SecurityQueryRepository,
   ) {}
 
-  public async getUserByDeviceId(deviceId: string) {
-    return this.securityRepository.findSessionByDeviceId(deviceId);
-  }
-
   public async deleteSessionById(userId: string, deviceId: string) {
     const findDevice =
       await this.securityRepository.findSessionByDeviceId(deviceId);

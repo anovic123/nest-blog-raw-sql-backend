@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -23,6 +23,6 @@ export class User {
   @Column({ type: "varchar", nullable: false})
   expirationDate: Date;
 
-  @Column({ type: "varchar", nullable: false})
-  createdAt: string
+  @CreateDateColumn()
+  createdAt: Date;
 }

@@ -61,8 +61,8 @@ export class UsersRepository {
   `;
 
     const result = await this.datasource.query(query, [id]);
-
-    return result.rowCount > 0;
+    console.log(result)
+    return result[1] === 1;
   }
 
 
@@ -94,7 +94,7 @@ export class UsersRepository {
       ]
     )
 
-    return result.rowCount > 0;
+    return result[1] === 1;
   }
 
   public async findUserById(id: User['id']): Promise<User | null> {

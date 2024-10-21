@@ -8,14 +8,14 @@ import {
 
 import { RequestWithUser } from '../../base/types/request';
 
-// import { SecurityRepository } from '../../features/security/infra/security.repository';
+import { SecurityRepository } from '../../features/security/infra/security.repository';
 
 import { JwtService } from '../adapters/jwt-service';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
   constructor(
-    // private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityRepository,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -26,22 +26,20 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    let refreshTokenData
-    // const refreshTokenData = await this.jwtService.getDataFromRefreshToken(
-    //   refreshToken,
-    //   this.securityRepository.findSessionByDeviceId.bind(
-    //     this.securityRepository,
-    //   ),
-    // );
+    const refreshTokenData = await this.jwtService.getDataFromRefreshToken(
+      refreshToken,
+      this.securityRepository.findSessionByDeviceId.bind(
+        this.securityRepository,
+      ),
+    );
 
     if (!refreshTokenData) {
       throw new UnauthorizedException();
     }
 
-    let securitySession
-    // const securitySession = await this.securityRepository.findSessionByDeviceId(
-    //   refreshTokenData.deviceId,
-    // );
+    const securitySession = await this.securityRepository.findSessionByDeviceId(
+      refreshTokenData.deviceId,
+    );
 
     const decodeTokenExp = this.jwtService.decodeToken(refreshToken);
 
@@ -49,7 +47,7 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     if (
-      securitySession?.lastActiveDate !==
+      securitySession?.exp !==
       new Date(decodeTokenExp.exp * 1000).toISOString()
     ) {
       throw new UnauthorizedException();

@@ -22,36 +22,27 @@ export class UsersQueryRepository {
       sortBy,
       sortDirection,
     } = pagination;
-    console.log(pagination)
 
-    const whereConditions: string[] = [];
-    const params: Array<string | number> = [pageSize, (pageNumber - 1) * pageSize];
-
-    if (searchEmailTerm) {
-      whereConditions.push(`"email" ILIKE $${params.length + 1}`);
-      params.push(`%${searchEmailTerm}%`);
-    }
-
-    if (searchLoginTerm) {
-      whereConditions.push(`"login" ILIKE $${params.length + 1}`);
-      params.push(`%${searchLoginTerm}%`);
-    }
-
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" OR ")}` : "";
+    const emailQuery = searchEmailTerm ? `"email" ILIKE '%${searchEmailTerm}%'` : null
+    const loginQuery = searchLoginTerm ? `"login" ILIKE '%${searchLoginTerm}%'` : null
+    const filters = [
+      emailQuery,
+      loginQuery
+    ].filter(Boolean).join(" OR ")
 
     const query = `
       SELECT * FROM "users" 
-      ${whereClause}
+      ${filters ? `WHERE ${filters}`: ""}
       ORDER BY "${sortBy}" ${sortDirection.toUpperCase()}
-      LIMIT $1 OFFSET $2
+      LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize}
     `;
 
-    const usersResult = await this.dataSource.query(query, params);
+    const usersResult = await this.dataSource.query(query);
 
     const totalCountQuery = `
-      SELECT COUNT(*) FROM "users" ${whereClause}
+      SELECT COUNT(*) FROM "users" ${filters ? `WHERE ${filters}` : ""}
     `;
-    const totalCountRes = await this.dataSource.query(totalCountQuery, params.slice(2));
+    const totalCountRes = await this.dataSource.query(totalCountQuery);
     const totalCount = parseInt(totalCountRes[0].count, 10);
 
     const paginationResult = {

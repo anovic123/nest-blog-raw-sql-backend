@@ -44,7 +44,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
         hours: 1,
         minutes: 3
       }),
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     }
 
     const createdResult = await this.authRepository.createUser(user);

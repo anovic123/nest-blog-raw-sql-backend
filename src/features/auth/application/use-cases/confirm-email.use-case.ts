@@ -20,6 +20,7 @@ export class ConfirmEmailUseCase
   ) {}
 
   async execute(command: ConfirmEmailCommand) {
+    console.log(command.code)
     const user = await this.usersQueryRepository.findUserByConfirmationCode(
       command.code,
     );
@@ -32,7 +33,7 @@ export class ConfirmEmailUseCase
       throw new HttpException('code is wrong', HttpStatus.BAD_REQUEST);
     }
     const res = await this.usersRepository.updateConfirmation(user.id);
-
+    console.log(res)
     if (!res) {
       throw new HttpException('oops', HttpStatus.BAD_REQUEST);
     }
