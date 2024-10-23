@@ -26,7 +26,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  public async getUsers(@Query()query) {
+  public async getUsers(@Query() query) {
     const pagination: PaginationWithSearchLoginAndEmailTerm =
       new PaginationWithSearchLoginAndEmailTerm(
         query,
