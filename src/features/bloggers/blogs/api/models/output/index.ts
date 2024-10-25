@@ -22,7 +22,11 @@ export class BlogPostViewModel {
   content: string;
   blogId: string;
   blogName: string;
-  createdAt: string;
+  createdAt: Date;
+  // extendedLikesInfo: PostLikesViewModel;
+}
+
+export class BlogPostOutputModel extends BlogPostViewModel {
   extendedLikesInfo: PostLikesViewModel;
 }
 

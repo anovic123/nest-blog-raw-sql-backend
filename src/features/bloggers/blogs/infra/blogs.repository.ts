@@ -2,8 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
+import { BlogPostViewModel, BlogViewModel } from "../api/models/output";
+import { BlogInputModel } from "../api/models/input/blog.input.model";
+
 import { Blog } from "../domain/blogs.entity";
-import { BlogViewModel } from "../api/models/output";
 
 @Injectable()
 export class BlogsRepository {
@@ -33,5 +35,75 @@ export class BlogsRepository {
     )
 
     return newBlog
+  }
+
+  public async updateBlog(
+    blog: BlogInputModel,
+    id: BlogViewModel['id']
+  ): Promise<boolean> {
+    const { name, description, websiteUrl } = blog
+
+    const query = `
+      UPDATE "blogs" SET "name" = $1,
+      "description" = $2,
+      "websiteUrl" = $3 WHERE "id" = $4
+    `
+  
+    const result = await this.dataSource.query(
+      query,
+      [
+        name,
+        description,
+        websiteUrl,
+        id
+      ]
+    )
+
+    return result[1] === 1
+  }
+
+  public async blogIsExist(id: string): Promise<boolean> {
+    const query = `
+      SELECT Count(*) FROM "blogs" WHERE id = $1
+    `
+
+    const res = await this.dataSource.query(query, [id])
+
+    return parseInt(res[0].count, 10) > 0
+  }
+  
+  public async deleteBlog(id: BlogViewModel['id']): Promise<boolean> {
+    const query = `
+      DELETE FROM "blogs" WHERE id = $1
+    `
+
+    const res = await this.dataSource.query(query, [id])
+    
+    return !!res[1]
+  }
+
+  public async createPostBlog(newPost: BlogPostViewModel): Promise<BlogPostViewModel> {
+    const { id, blogId, blogName, content, createdAt, shortDescription, title } = newPost
+ 
+    const query = `
+      INSERT INTO "posts"
+      (id, "shortDescription", content, "blogId", "blogName", "createdAt")
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id
+    `
+
+    const result = await this.dataSource.query(
+      query,
+      [
+        id,
+        shortDescription,
+        content,
+        blogId,
+        blogName,
+        createdAt
+      ]
+    )
+
+    return newPost
   }
 }
