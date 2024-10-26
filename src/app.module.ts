@@ -9,11 +9,12 @@ import { AuthModule } from './features/auth/auth.module';
 import { UsersModule } from './features/users/users.module';
 import { TestingModule } from './features/testing/testing.module';
 import { SecurityModule } from './features/security/security.module';
-import { DatabaseService } from './data-base.service';
+import { BloggersModule } from './features/bloggers/bloggers.module';
 
 const modules = [
   AuthModule,
   UsersModule,
+  BloggersModule,
   SecurityModule,
   TestingModule
 ]
@@ -47,6 +48,6 @@ const modules = [
     ...modules
   ],
   controllers: [],
-  providers: [DatabaseService],
+  providers: [],
 })
 export class AppModule {}

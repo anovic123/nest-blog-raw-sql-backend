@@ -19,8 +19,18 @@ export class TestingRepository {
         TRUNCATE TABLE "devices" RESTART IDENTITY CASCADE
       `
 
+      const blogsTable = `
+        TRUNCATE TABLE "blogs" RESTART IDENTITY CASCADE
+      `
+
+      const postsTable = `
+        TRUNCATE TABLE "posts" RESTART IDENTITY CASCADE
+      `
+
       await this.dataSource.query(userTable)
       await this.dataSource.query(devicesTable)
+      await this.dataSource.query(blogsTable)
+      await this.dataSource.query(postsTable)
 
       return true
     } catch (error) {

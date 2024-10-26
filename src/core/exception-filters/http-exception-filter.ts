@@ -39,7 +39,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
             field:
               typeof error.key === 'string'
                 ? error.key
-                : responseBody?.split(' ')[0],
+                : typeof responseBody.message === 'string'
+                ? responseBody.message.split(' ')[0]
+                : 'unknown',
           });
         }
       };

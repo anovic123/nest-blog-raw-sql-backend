@@ -22,12 +22,14 @@ export class Pagination {
   public readonly pageSize: number;
   public readonly sortDirection: SortDirectionType;
   public readonly sortBy: string;
+  public readonly searchNameTerm: string | null;
 
   constructor(query: ParsedQs, sortProperties: string[]) {
     this.sortBy = this.getSortBy(query, sortProperties);
     this.sortDirection = this.getSortDirection(query);
     this.pageNumber = Number(query.pageNumber ?? 1);
     this.pageSize = Number(query.pageSize ?? 10);
+    this.searchNameTerm = query.searchNameTerm?.toString() || null;
   }
 
   public getSortDirectionInNumericFormat(): -1 | 1 {
