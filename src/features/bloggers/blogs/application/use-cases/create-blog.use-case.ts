@@ -32,6 +32,6 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
       } 
       const createdResult = await this.blogsRepository.createBlog(newBlog)
 
-      return createdResult
+      return newBlog
   }
 }

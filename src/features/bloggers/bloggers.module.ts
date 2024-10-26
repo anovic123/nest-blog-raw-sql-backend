@@ -15,6 +15,7 @@ import { UpdateBlogUseCase } from "./blogs/application/use-cases/update-blog.use
 import { DeleteBlogUseCase } from "./blogs/application/use-cases/delete-blog.use-case";
 import { CreatePostBlogUseCase } from "./blogs/application/use-cases/create-post-blog.use-case";
 import { UpdateBlogPostUseCase } from "./blogs/application/use-cases/update-blog-post.use-case";
+import { DeleteBlogPostUseCase } from "./blogs/application/use-cases/delete-post-blog.use-case";
 
 import { PostIsExistConstraint } from "src/core/decorators/validate/is-post-exist.decorator";
 import { BlogIsExistConstraint } from "src/core/decorators/validate/is-blog-exist.decorator";
@@ -29,6 +30,7 @@ import { BlogIsExistConstraint } from "src/core/decorators/validate/is-blog-exis
     UpdateBlogUseCase,
     DeleteBlogUseCase,
     CreatePostBlogUseCase,
+    DeleteBlogPostUseCase,
     UpdateBlogPostUseCase,
     DeleteBlogUseCase,
     BlogsRepository,

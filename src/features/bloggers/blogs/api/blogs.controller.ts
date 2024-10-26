@@ -6,7 +6,7 @@ import { BlogsQueryRepository } from "../infra/blogs-query.repository";
 
 import { RequestWithUser } from "src/base/types/request";
 
-import { BLOGS_SORTING_PROPERTIES } from "./blogs-admin.controller";
+import { BLOGS_SORTING_PROPERTIES, POSTS_SORTING_PROPERTIES } from "./blogs-admin.controller";
 
 @Controller('blogs')
 export class BlogsController {
@@ -38,9 +38,15 @@ export class BlogsController {
   @Get('/:blogId/posts')
   @HttpCode(HttpStatus.OK)
   public async getBlogPostsById(@Param('blogId') blogId,
-  @Query() query: { [key: string]: string | undefined },
+  @Query() query,
   @Req() request: RequestWithUser,) {
     const user = request['user']
+
+    const pagination = new Pagination(
+      query,
+      POSTS_SORTING_PROPERTIES
+    )
+
 
     const isBlogExisted = await this.blogsQueryRepository.findBlog(blogId)
 
@@ -49,7 +55,7 @@ export class BlogsController {
     }
 
     const blogsPostsResults = await this.blogsQueryRepository.getBlogPosts(
-      query,
+      pagination,
       blogId,
       user?.userId
     )

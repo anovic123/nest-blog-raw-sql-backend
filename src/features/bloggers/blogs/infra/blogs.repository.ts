@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { BlogPostViewModel, BlogViewModel } from "../api/models/output";
+import { BlogPostViewModel, BlogViewModel, LikePostStatus } from "../api/models/output";
 import { BlogInputModel } from "../api/models/input/blog.input.model";
 
 import { Blog } from "../domain/blogs.entity";
@@ -14,7 +14,7 @@ export class BlogsRepository {
     protected dataSource: DataSource
   ) {}  
 
-  public async createBlog(newBlog: Blog): Promise<Blog> {
+  public async createBlog(newBlog: Blog) {
     const query = `
       INSERT INTO "blogs"
       (id, name, description, "websiteUrl", "createdAt", "isMembership")
@@ -34,7 +34,17 @@ export class BlogsRepository {
       ]
     )
 
-    return newBlog
+    const newBlogResult = {
+      ...newBlog,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None",
+        newestLikes: []
+      }
+    }
+
+    return newBlogResult
   }
 
   public async updateBlog(
@@ -87,8 +97,8 @@ export class BlogsRepository {
  
     const query = `
       INSERT INTO "posts"
-      (id, "shortDescription", content, "blogId", "blogName", "createdAt")
-      VALUES ($1, $2, $3, $4, $5, $6)
+      (id, "shortDescription", content, "blogId", "blogName", "createdAt", "title")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id
     `
 
@@ -100,10 +110,21 @@ export class BlogsRepository {
         content,
         blogId,
         blogName,
-        createdAt
+        createdAt,
+        title
       ]
     )
 
-    return newPost
+    const newPostResult = {
+      ...newPost,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikePostStatus.NONE,
+        newestLikes: []
+      }
+    }
+
+    return newPostResult
   }
 }

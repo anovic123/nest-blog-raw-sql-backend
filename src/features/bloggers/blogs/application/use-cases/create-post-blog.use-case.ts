@@ -35,8 +35,8 @@ export class CreatePostBlogUseCase implements ICommandHandler<CreatePostBlogComm
         title: body.title,
         shortDescription: body.shortDescription,
         content: body.content,
-        blogId: findBlog[0].id,
-        blogName: findBlog[0].name,
+        blogId: findBlog.id,
+        blogName: findBlog.name,
         createdAt: new Date()
       } 
 

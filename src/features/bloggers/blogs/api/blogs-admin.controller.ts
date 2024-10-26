@@ -23,8 +23,10 @@ import { RequestWithUser } from "src/base/types/request";
 import { PostInputModel } from "./models/input/create-post.input.model";
 import { UpdateBlogPostCommand } from "../application/use-cases/update-blog-post.use-case";
 import { DeleteBlogPostCommand } from "../application/use-cases/delete-post-blog.use-case";
+import { UpdatePostInputModel } from "./models/input/update-post.input.model";
 
 export const BLOGS_SORTING_PROPERTIES: SortingPropertiesType<Blog> = ['createdAt', 'description', 'id', 'isMembership', 'name', 'websiteUrl']
+export const POSTS_SORTING_PROPERTIES: SortingPropertiesType<BlogPostViewModel> = ['blogId', 'blogName', 'content', 'createdAt', 'id', 'shortDescription', 'title']
 
 @Controller("sa/blogs")
 export class BlogsAdminController {
@@ -79,13 +81,18 @@ export class BlogsAdminController {
   @Get('/:blogId/posts')
   public async getBlogPosts(
     @Param('blogId') blogId: string,
-    @Query() query: { [key: string]: string | undefined },
+    @Query() query,
     @Req() request: RequestWithUser,
   ) {
+    const pagination = new Pagination(
+      query,
+      POSTS_SORTING_PROPERTIES
+    )
+
     const user = request['user']
     
     const blogsPostsResults = await this.blogsQueryRepository.getBlogPosts(
-      query,
+      pagination,
       blogId,
       user?.userId
     )
@@ -101,7 +108,7 @@ export class BlogsAdminController {
   @Put('/:blogId/posts/:postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   public async updateBlogPost(
-    @Body() body: PostInputModel,
+    @Body() body: UpdatePostInputModel,
     @Param('blogId') blogId: BlogViewModel['id'],
     @Param('postId') postId: BlogPostViewModel['id']
   ) {

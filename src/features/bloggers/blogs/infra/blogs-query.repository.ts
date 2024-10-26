@@ -10,7 +10,7 @@ import { PaginatedResponse } from "src/base/types/pagination";
 
 import { BlogPostOutputModel, BlogPostViewModel, BlogViewModel, LikePostStatus } from "../api/models/output";
 
-import { Pagination } from "src/base/models/pagination.base.model";
+import { Pagination, PaginationType } from "src/base/models/pagination.base.model";
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -20,21 +20,22 @@ export class BlogsQueryRepository {
   ) {}  
 
   public async getAllBlogs(
-    pagination: Pagination,
-    blogId?: Blog['id'],
+    pagination: PaginationType,
   ): Promise<PaginatedResponse<BlogViewModel>> {
     const { 
       pageNumber,
       pageSize,
-      sortBy,
+      sortBy, 
+      searchNameTerm,
       sortDirection,
     } = pagination;
   
-    const whereClause = blogId ? `WHERE "id" = '${blogId}'` : '';
-  
+    const search = searchNameTerm ? `
+      WHERE "name" ILIKE '%${searchNameTerm}%'` : '';
+
     const query = `
       SELECT * FROM "blogs"
-      ${whereClause} 
+      ${search}
       ORDER BY "${sortBy}" ${sortDirection.toUpperCase()}
       LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
     `;
@@ -43,7 +44,7 @@ export class BlogsQueryRepository {
   
     const totalCountQuery = `
       SELECT COUNT(*) FROM "blogs"
-      ${whereClause};
+      ${search};
     `;
   
     const totalCountRes = await this.dataSource.query(totalCountQuery);
@@ -67,27 +68,27 @@ export class BlogsQueryRepository {
 
     const res = await this.dataSource.query(query, [blogId])
   
-    return res.length > 0 ? res : null
+    return res.length > 0 ? res[0] : null
   }
 
   public async getBlogPosts(
-    pagination: GetBlogPostsHelperResult,
+    pagination: PaginationType,
     blogId: string,
     userId?: string | null | undefined,
   ): Promise<PaginatedResponse<BlogPostOutputModel>> {
     const { 
-      pageNumber = 1,
-      pageSize = 10,
-      sortBy = 'createdAt',
-      sortDirection = 'ASC',
+      pageNumber,
+      pageSize,
+      sortBy, 
+      searchNameTerm,
+      sortDirection,
     } = pagination;
   
-    const sortDirectionUpper = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-  
+
     const query = `
       SELECT * FROM "posts"
       WHERE "blogId" = $1
-      ORDER BY "${sortBy}" ${sortDirectionUpper}
+      ORDER BY "${sortBy}" ${sortDirection}
       LIMIT $2 OFFSET $3;
     `;
   

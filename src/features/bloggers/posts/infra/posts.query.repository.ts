@@ -66,7 +66,7 @@ export class PostsQueryRepository {
 
     const res = await this.dataSource.query(query, [id])
 
-    return res.length > 0 ? res.map((p: BlogPostViewModel) => this.mapPostOutput(p)) : null;
+    return res.length > 0 ? res.map((p: BlogPostViewModel) => this.mapPostOutput(p))[0] : null;
   }
   
   public mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): BlogPostOutputModel{

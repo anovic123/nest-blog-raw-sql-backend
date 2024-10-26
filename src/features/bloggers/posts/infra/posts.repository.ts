@@ -2,8 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { BlogPostViewModel } from "../../blogs/api/models/output";
+import { BlogPostViewModel, BlogViewModel } from "../../blogs/api/models/output";
 import { PostInputModel } from "../../blogs/api/models/input/create-post.input.model";
+import { UpdatePostInputModel } from "../../blogs/api/models/input/update-post.input.model";
 
 @Injectable()
 export class PostsRepository {
@@ -22,11 +23,11 @@ export class PostsRepository {
   }
 
   public async updatePost(
-    body: PostInputModel,
-    postId: BlogPostViewModel['id']
+    body: UpdatePostInputModel,
+    postId: BlogPostViewModel['id'],
+    blogId: BlogViewModel['id']
   ): Promise<boolean> {
     const {
-      blogId,
       content,
       shortDescription,
       title,      

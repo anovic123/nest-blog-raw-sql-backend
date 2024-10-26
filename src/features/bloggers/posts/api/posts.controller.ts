@@ -3,6 +3,8 @@ import { Controller, Get, NotFoundException, Param, Query, Req } from "@nestjs/c
 import { PostsQueryRepository } from "../infra/posts.query.repository";
 
 import { RequestWithUser } from "src/base/types/request";
+import { Pagination } from "src/base/models/pagination.base.model";
+import { POSTS_SORTING_PROPERTIES } from "../../blogs/api/blogs-admin.controller";
 
 @Controller('posts')
 export class PostsController {
@@ -12,13 +14,18 @@ export class PostsController {
 
   @Get()
   public async getPosts(
-    @Query() query: { [key: string]: string | undefined },
+    @Query() query,
     @Req() request: RequestWithUser,
   ) {
     const user = request['user']
-    
-    const blogsPostsResults = await this.postsQueryRepository.getBlogPosts(
+
+    const pagination = new Pagination(
       query,
+      POSTS_SORTING_PROPERTIES
+    )
+
+    const blogsPostsResults = await this.postsQueryRepository.getBlogPosts(
+      pagination,
       // user?.userId
     )
 
