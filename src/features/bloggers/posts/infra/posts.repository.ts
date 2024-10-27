@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { BlogPostViewModel, BlogViewModel } from "../../blogs/api/models/output";
+import { BlogPostViewModel, BlogViewModel, LikePostStatus } from "../../blogs/api/models/output";
 import { PostInputModel } from "../../blogs/api/models/input/create-post.input.model";
 import { UpdatePostInputModel } from "../../blogs/api/models/input/update-post.input.model";
 
@@ -12,7 +12,7 @@ export class PostsRepository {
     @InjectDataSource() protected readonly dataSource: DataSource
   ) {}
 
-  public async isPostExisted(id: BlogPostViewModel['id']) {
+  public async isPostExisted(id: BlogPostViewModel['id']): Promise<boolean> {
     const query = `
       SELECT COUNT(*) FROM "posts" WHERE id = $1
     `
@@ -63,5 +63,42 @@ export class PostsRepository {
     const res = await this.dataSource.query(query, [id])
     
     return !!res[1]
+  }
+
+  
+  public async createPostBlog(newPost: BlogPostViewModel): Promise<BlogPostViewModel> {
+    const { id, blogId, blogName, content, createdAt, shortDescription, title } = newPost
+ 
+    const query = `
+      INSERT INTO "posts"
+      (id, "shortDescription", content, "blogId", "blogName", "createdAt", "title")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id
+    `
+
+    const result = await this.dataSource.query(
+      query,
+      [
+        id,
+        shortDescription,
+        content,
+        blogId,
+        blogName,
+        createdAt,
+        title
+      ]
+    )
+
+    const newPostResult = {
+      ...newPost,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikePostStatus.NONE,
+        newestLikes: []
+      }
+    }
+
+    return newPostResult
   }
 }

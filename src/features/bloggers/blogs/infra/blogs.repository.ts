@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { BlogPostViewModel, BlogViewModel, LikePostStatus } from "../api/models/output";
+import { BlogViewModel } from "../api/models/output";
 import { BlogInputModel } from "../api/models/input/blog.input.model";
 
 import { Blog } from "../domain/blogs.entity";
@@ -90,41 +90,5 @@ export class BlogsRepository {
     const res = await this.dataSource.query(query, [id])
     
     return !!res[1]
-  }
-
-  public async createPostBlog(newPost: BlogPostViewModel): Promise<BlogPostViewModel> {
-    const { id, blogId, blogName, content, createdAt, shortDescription, title } = newPost
- 
-    const query = `
-      INSERT INTO "posts"
-      (id, "shortDescription", content, "blogId", "blogName", "createdAt", "title")
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id
-    `
-
-    const result = await this.dataSource.query(
-      query,
-      [
-        id,
-        shortDescription,
-        content,
-        blogId,
-        blogName,
-        createdAt,
-        title
-      ]
-    )
-
-    const newPostResult = {
-      ...newPost,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikePostStatus.NONE,
-        newestLikes: []
-      }
-    }
-
-    return newPostResult
   }
 }

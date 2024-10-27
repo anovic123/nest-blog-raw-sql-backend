@@ -1,4 +1,4 @@
-export interface GetAllBlogsHelperResult {
+export class GetAllBlogsHelperResult {
   pageNumber?: number;
   pageSize?: number;
   sortBy?: string;
@@ -6,7 +6,7 @@ export interface GetAllBlogsHelperResult {
   searchNameTerm?: string;
 }
 
-export interface GetBlogPostsHelperResult {
+export class GetBlogPostsHelperResult {
   pageNumber?: number;
   pageSize?: number;
   sortBy?: string;
