@@ -27,10 +27,25 @@ export class TestingRepository {
         TRUNCATE TABLE "posts" RESTART IDENTITY CASCADE
       `
 
+      const commentsTable = `
+        TRUNCATE TABLE "comments" RESTART IDENTITY CASCADE
+      `
+
+      const likesPostsTable = `
+        TRUNCATE TABLE "like-posts" RESTART IDENTITY CASCADE
+      `
+
+      const likeCommentsTable = `
+        TRUNCATE TABLE "like-comments" RESTART IDENTITY CASCADE
+      `
+
       await this.dataSource.query(userTable)
       await this.dataSource.query(devicesTable)
       await this.dataSource.query(blogsTable)
       await this.dataSource.query(postsTable)
+      await this.dataSource.query(commentsTable)
+      await this.dataSource.query(likesPostsTable)
+      await this.dataSource.query(likeCommentsTable)
 
       return true
     } catch (error) {

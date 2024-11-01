@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BlogPostInputModel } from "../../api/models/input/blog-post.input.model";
 import { BlogPostViewModel, BlogViewModel } from "../../api/models/output";
 
-import { BlogsRepository } from "../../infra/blogs.repository";
+import { PostsRepository } from "src/features/bloggers/posts/infra/posts.repository";
 import { BlogsQueryRepository } from "../../infra/blogs-query.repository";
 
 export class CreatePostBlogCommand {
@@ -18,7 +18,7 @@ export class CreatePostBlogCommand {
 @CommandHandler(CreatePostBlogCommand)
 export class CreatePostBlogUseCase implements ICommandHandler<CreatePostBlogCommand> {
   constructor (
-    private readonly blogsRepository: BlogsRepository,
+    private readonly postsRepository: PostsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository
   ) {}
 
@@ -40,6 +40,6 @@ export class CreatePostBlogUseCase implements ICommandHandler<CreatePostBlogComm
         createdAt: new Date()
       } 
 
-      return this.blogsRepository.createPostBlog(newPost)
+      return this.postsRepository.createPostBlog(newPost)
   }
 }

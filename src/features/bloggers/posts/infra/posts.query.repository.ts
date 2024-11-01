@@ -7,6 +7,9 @@ import { GetBlogPostsHelperResult } from "../../blogs/helper";
 import { PaginatedResponse } from "src/base/types/pagination";
 
 import { BlogPostOutputModel, BlogPostViewModel, LikePostStatus } from "../../blogs/api/models/output";
+import { PostViewModel } from "../api/output";
+import { User } from "src/features/users/domain/users.entity";
+import { LikePosts } from "../domain/like-post.entity";
 
 @Injectable()
 export class PostsQueryRepository {
@@ -17,8 +20,8 @@ export class PostsQueryRepository {
 
   public async getBlogPosts(
     pagination: GetBlogPostsHelperResult,
-    postId?: string,
     userId?: string | null | undefined,
+    postId?: string,
   ): Promise<PaginatedResponse<BlogPostOutputModel>> {
     const { 
       pageNumber = 1,
@@ -26,7 +29,7 @@ export class PostsQueryRepository {
       sortBy = 'createdAt',
       sortDirection = 'ASC',
     } = pagination;
-  
+
     const sortDirectionUpper = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
     const offset = (pageNumber - 1) * pageSize;
   
@@ -47,29 +50,60 @@ export class PostsQueryRepository {
     const totalCountParams = postId ? [postId] : [];
     const totalCountRes = await this.dataSource.query(totalCountQuery, totalCountParams);
     const totalCount = parseInt(totalCountRes[0].count, 10);
+
+    const mappedItems =  blogsPostResult.length > 0 
+      ? await Promise.all(blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p, userId))) 
+      : []
   
     const paginationResult = {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize,
       totalCount,
-      items: blogsPostResult.length > 0 ? blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p)) : [],
+      items: mappedItems
     };
   
-    return paginationResult as any;
+    return paginationResult
   }
 
-  public async getPostsById(id: BlogPostViewModel['id']): Promise<BlogPostOutputModel | null> {
+  public async getPostsById(id: BlogPostViewModel['id'], userId?: User['id']): Promise<BlogPostOutputModel | null> {
     const query = `
       SELECT * FROM "posts" WHERE "id" = $1
     `
 
     const res = await this.dataSource.query(query, [id])
 
-    return res.length > 0 ? res.map((p: BlogPostViewModel) => this.mapPostOutput(p))[0] : null;
+    const result = res.length > 0 ? await this.mapPostOutput(res[0], userId) : null;
+
+    return result
   }
   
-  public mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): BlogPostOutputModel{
+  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): Promise<BlogPostOutputModel> {
+    const likes = await this.dataSource.query(
+      `
+        SELECT lp.*, (
+          SELECT "login" 
+          FROM "users" 
+          WHERE "users"."id" = lp."authorId"
+        ) AS "login"
+        FROM "like-posts" AS lp 
+        WHERE lp."postId" = $1
+        ORDER BY lp."createdAt" ASC`
+      , [post.id])
+
+    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null
+    const likesCount = likes.filter((l: LikePosts) => 
+      l.status === LikePostStatus.LIKE).length ?? 0
+    const dislikesCount = likes.filter((l: LikePosts) =>
+      l.status === LikePostStatus.DISLIKE
+    ).length ?? 0
+    const myStatus = userLike?.status ?? LikePostStatus.NONE
+    const newestLikes = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).slice(0, 3).map(l => ({
+      addedAt: l.createdAt,
+      userId: l.authorId,
+      login: l.login
+    }))
+    
     const postForOutput = {
      id: post.id,
      title: post.title,
@@ -79,10 +113,10 @@ export class PostsQueryRepository {
      blogName: post.blogName,
      createdAt: post.createdAt,
      extendedLikesInfo: {
-       likesCount: 0,
-       dislikesCount: 0,
-       myStatus: LikePostStatus.NONE,
-       newestLikes: []
+       likesCount,
+       dislikesCount,
+       myStatus,
+       newestLikes
      }
     } 
  
