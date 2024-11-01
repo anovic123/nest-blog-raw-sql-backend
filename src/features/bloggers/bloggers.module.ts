@@ -26,6 +26,8 @@ import { UsersRepository } from "../users/infra/users.repository";
 import { CommentsQueryRepository } from "./comments/infra/comments.query.repository";
 import { DeleteCommentUseCase } from "./comments/application/use-cases/delete-comment.use-case";
 import { UpdateCommentUseCase } from "./comments/application/use-cases/update-comment.use-case";
+import { LikePostUseCase } from "./posts/application/use-cases/like-post.use-case";
+import { LikeCommentUseCase } from "./comments/application/use-cases/like-comment.use-case";
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { UpdateCommentUseCase } from "./comments/application/use-cases/update-co
     CreatePostCommentUseCase,
     DeleteCommentUseCase,
     UpdateCommentUseCase,
+    LikePostUseCase,
+    LikeCommentUseCase,
     BlogsRepository,
     PostsRepository,
     BlogsQueryRepository,

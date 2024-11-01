@@ -1,10 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
 
 import { BlogPostViewModel, BlogViewModel, LikePostStatus } from "../../blogs/api/models/output";
 import { PostInputModel } from "../../blogs/api/models/input/create-post.input.model";
 import { UpdatePostInputModel } from "../../blogs/api/models/input/update-post.input.model";
+import { User } from "src/features/users/domain/users.entity";
+import { PostViewModel } from "../api/output";
 
 @Injectable()
 export class PostsRepository {
@@ -101,4 +104,46 @@ export class PostsRepository {
 
     return newPostResult
   }
+
+  public async likePost(userId: User['id'], postId: PostViewModel['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-posts" ("id", "authorId", status, "postId", "createdAt")
+      VALUES ($1, $2, '${LikePostStatus.LIKE}', $3, $4)
+      ON CONFLICT ("authorId", "postId")
+      DO UPDATE SET status = '${LikePostStatus.LIKE}', "createdAt" = $4
+      `,
+      [id, userId, postId, new Date()]
+    );
+    return true;
+  }
+  
+  public async dislikePost(userId: User['id'], postId: PostViewModel['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-posts" ("id", "authorId", status, "postId", "createdAt")
+      VALUES ($1, $2, '${LikePostStatus.DISLIKE}', $3, $4)
+      ON CONFLICT ("authorId", "postId")
+      DO UPDATE SET status = '${LikePostStatus.DISLIKE}', "createdAt" = $4
+      `,
+      [id, userId, postId, new Date()]
+    );
+    return true;
+  }
+  
+  public async noneStatusPost(userId: User['id'], postId: PostViewModel['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-posts" ("id", "authorId", status, "postId", "createdAt")
+      VALUES ($1, $2, '${LikePostStatus.NONE}', $3, $4)
+      ON CONFLICT ("authorId", "postId")
+      DO UPDATE SET status = '${LikePostStatus.NONE}', "createdAt" = $4
+      `,
+      [id, userId, postId, new Date()]
+    );
+    return true;
+  }  
 }

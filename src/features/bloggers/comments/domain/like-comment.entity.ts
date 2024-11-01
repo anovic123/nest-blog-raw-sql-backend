@@ -1,8 +1,9 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
-import { LikePostStatus } from "../../blogs/api/models/output";
 
-@Entity('like-posts')
-export class LikePosts {
+import { LikeCommentStatus } from "../api/models/output";
+
+@Entity('like-comments')
+export class LikeComment {
   @PrimaryColumn('uuid')
   id: string;
 
@@ -16,13 +17,19 @@ export class LikePosts {
     type: 'varchar',
     nullable: false
   })
-  status: LikePostStatus
+  status: LikeCommentStatus
 
   @Column({
     type: 'varchar',
     nullable: false
   })
   postId: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
+  commentId: string;
 
   @CreateDateColumn()
   createdAt: Date;

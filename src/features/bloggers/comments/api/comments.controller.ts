@@ -9,6 +9,9 @@ import { Comments } from "../domain/comments.entity";
 import { CommentInputModel } from "./models/input/comment.input.model";
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment.use-case";
 import { UpdateCommentCommand } from "../application/use-cases/update-comment.use-case";
+import { LikeCommentStatus } from "./models/output";
+import { LikeCommentCommand } from "../application/use-cases/like-comment.use-case";
+import { LikeStatusInputModel } from "./models/input/likes.input.model";
 
 @Controller('comments')
 export class CommentsController {
@@ -16,6 +19,25 @@ export class CommentsController {
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
+
+  @UseGuards(AuthGuard)
+  @Put('/:commentId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async likeComment(
+    @Param('commentId') commentId: string,
+    @Body() body: LikeStatusInputModel,
+    @Req() request: RequestWithUser
+  ) {
+    const user = request['user']
+
+    const comment = await this.commentsQueryRepository.getPostsCommentsById(commentId, user?.userId, true)
+
+    if (!comment) {
+      throw new NotFoundException()
+    }
+
+    return this.commandBus.execute(new LikeCommentCommand(commentId, comment?.likesInfo?.myStatus, body.likeStatus, user?.userId, comment?.postId!))
+  }
 
   @Public()
   @UseGuards(AuthGuard)
@@ -28,7 +50,7 @@ export class CommentsController {
   ) {
     const user = request['user']
 
-    const result = await this.commentsQueryRepository.getPostsCommentsById(id, user?.userId)
+    const result = await this.commentsQueryRepository.getPostsCommentsById(id, user?.userId, false)
 
     if (!result) {
       throw new NotFoundException('posts comments not found');

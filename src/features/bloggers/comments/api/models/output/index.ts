@@ -13,8 +13,9 @@ export class CommentViewModel {
   id: string;
   content: string;
   commentatorInfo: CommentOutputCommentatorInfoModel;
-  createdAt: string;
+  createdAt: Date;
   likesInfo: CommentLikesViewModel;
+  postId?: string;
 }
 
 export class CommentLikesViewModel {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 
 import { POSTS_SORTING_PROPERTIES } from "../../blogs/api/blogs-admin.controller";
@@ -19,6 +19,8 @@ import { CommentInputModel } from "../../comments/api/models/input/comment.input
 import { Public } from "src/core/decorators/public.decorator";
 import { SortingPropertiesType } from "src/base/types/sorting-properties.type";
 import { CommentViewModel } from "../../comments/api/models/output";
+import { LikePostInputModel } from "./input/like-post.input.model";
+import { LikePostCommand } from "../application/use-cases/like-post.use-case";
 
 export const COMMENTS_SORTING_PROPERTIES: SortingPropertiesType<CommentViewModel> = ['id', 'content', 'createdAt']
 
@@ -30,13 +32,33 @@ export class PostsController {
     private readonly commandBus: CommandBus
   ) {}
 
+  @UseGuards(AuthGuard)
+  @Put('/:postId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async likePost(
+    @Param('postId') postId: string,
+    @Body() body: LikePostInputModel,
+    @Req() request: RequestWithUser
+  ) {
+    const user = request['user']
+
+    const post = await this.postsQueryRepository.getPostsById(postId, user?.userId)
+
+    if (!post) {
+      throw new NotFoundException()
+    }
+
+    return this.commandBus.execute(new LikePostCommand(postId, post?.extendedLikesInfo?.myStatus, body.likeStatus, user?.userId))
+  }
+
+  @Public()
+  @UseGuards(AuthGuard)
   @Get()
   public async getPosts(
     @Query() query,
     @Req() request: RequestWithUser,
   ) {
     const user = request['user']
-
     const pagination = new Pagination(
       query,
       POSTS_SORTING_PROPERTIES
@@ -44,12 +66,14 @@ export class PostsController {
 
     const blogsPostsResults = await this.postsQueryRepository.getBlogPosts(
       pagination,
-      // user?.userId
+      user?.userId
     )
 
     return blogsPostsResults;
   }
 
+  @Public()
+  @UseGuards(AuthGuard)
   @Get('/:id')
   public async getPostsById(
     @Param('id') postId: string,
@@ -59,7 +83,7 @@ export class PostsController {
     
     const blogsPostsResults = await this.postsQueryRepository.getPostsById(
       postId,
-      // user?.userId
+      user?.userId
     )
 
     if (!blogsPostsResults) {
@@ -107,7 +131,8 @@ export class PostsController {
 
     const result = await this.commentsQueryRepository.getPostsComments(
       postId,
-      pagination
+      pagination,
+      user?.id
     )
 
     if (!result || result.items.length === 0) {

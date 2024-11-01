@@ -11,6 +11,7 @@ import { PaginatedResponse } from "src/base/types/pagination";
 import { BlogPostOutputModel, BlogPostViewModel, BlogViewModel, LikePostStatus } from "../api/models/output";
 
 import { Pagination, PaginationType } from "src/base/models/pagination.base.model";
+import { LikePosts } from "../../posts/domain/like-post.entity";
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -107,30 +108,55 @@ export class BlogsQueryRepository {
       page: pageNumber,
       pageSize,
       totalCount,
-      items: blogsPostResult.length > 0 ? blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p)) : [],
+      items: blogsPostResult.length > 0 ? await Promise.all(blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p, userId))) : [],
     };
   
-    return paginationResult as any;
+    return paginationResult;
   }
   
 
-  public mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): BlogPostOutputModel{
-   const postForOutput = {
-    id: post.id,
-    title: post.title,
-    shortDescription: post.shortDescription,
-    content: post.content,
-    blogId: post.blogId,
-    blogName: post.blogName,
-    createdAt: post.createdAt,
-    extendedLikesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: LikePostStatus.NONE,
-      newestLikes: []
-    }
-   } 
+  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): Promise<BlogPostOutputModel> {
+    const likes = await this.dataSource.query(
+      `
+        SELECT lp.*, (
+          SELECT "login" 
+          FROM "users" 
+          WHERE "users"."id" = lp."authorId"
+        ) AS "login"
+        FROM "like-posts" AS lp 
+        WHERE lp."postId" = $1
+        ORDER BY lp."createdAt" ASC`
+      , [post.id])
 
-   return postForOutput;
-  }
+    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null
+    const likesCount = likes.filter((l: LikePosts) => 
+      l.status === LikePostStatus.LIKE).length ?? 0
+    const dislikesCount = likes.filter((l: LikePosts) =>
+      l.status === LikePostStatus.DISLIKE
+    ).length ?? 0
+    const myStatus = userLike?.status ?? LikePostStatus.NONE
+    const newestLikes = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).slice(0, 3).map(l => ({
+      addedAt: l.createdAt,
+      userId: l.authorId,
+      login: l.login
+    }))
+    
+    const postForOutput = {
+     id: post.id,
+     title: post.title,
+     shortDescription: post.shortDescription,
+     content: post.content,
+     blogId: post.blogId,
+     blogName: post.blogName,
+     createdAt: post.createdAt,
+     extendedLikesInfo: {
+       likesCount,
+       dislikesCount,
+       myStatus,
+       newestLikes
+     }
+    } 
+ 
+    return postForOutput;
+   }
 }

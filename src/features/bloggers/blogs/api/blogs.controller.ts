@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Query, Req } from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Query, Req, UseGuards } from "@nestjs/common";
 
 import { Pagination } from "src/base/models/pagination.base.model";
 
@@ -7,6 +7,8 @@ import { BlogsQueryRepository } from "../infra/blogs-query.repository";
 import { RequestWithUser } from "src/base/types/request";
 
 import { BLOGS_SORTING_PROPERTIES, POSTS_SORTING_PROPERTIES } from "./blogs-admin.controller";
+import { Public } from "src/core/decorators/public.decorator";
+import { AuthGuard } from "src/core/guards/auth.guard";
 
 @Controller('blogs')
 export class BlogsController {
@@ -35,6 +37,8 @@ export class BlogsController {
     return blog
   }
 
+  @Public()
+  @UseGuards(AuthGuard)
   @Get('/:blogId/posts')
   @HttpCode(HttpStatus.OK)
   public async getBlogPostsById(@Param('blogId') blogId,
@@ -57,7 +61,7 @@ export class BlogsController {
     const blogsPostsResults = await this.blogsQueryRepository.getBlogPosts(
       pagination,
       blogId,
-      user?.userId
+      user?.userId,
     )
 
     if (!blogsPostsResults || blogsPostsResults.items.length === 0) {

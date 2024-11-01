@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
 
 import { Comments } from "../domain/comments.entity";
 
 import { CommentViewModel, LikeCommentStatus } from "../api/models/output";
 
 import { User } from "src/features/users/domain/users.entity";
+import { Posts } from "../../posts/domain/posts.entity";
 
 @Injectable()
 export class CommentsRepository {
@@ -97,7 +99,7 @@ export class CommentsRepository {
       userId: comment.userId,
       userLogin: comment.userLogin,
     },
-    createdAt: comment.createdAt.toISOString(),
+    createdAt: comment.createdAt,
     likesInfo: {
       likesCount: 0,
       dislikesCount: 0,
@@ -106,4 +108,46 @@ export class CommentsRepository {
   };
   return commentForOutput;
 }
+
+public async likeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+  const id = uuidv4();
+  await this.dataSource.query(
+    `
+    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+    VALUES ($1, $2, '${LikeCommentStatus.LIKE}', $3, $4, $5)
+    ON CONFLICT ("authorId", "postId")
+    DO UPDATE SET status = '${LikeCommentStatus.LIKE}', "createdAt" = $5
+    `,
+    [id, userId, postId, commentId, new Date()]
+  );
+  return true;
+}
+
+public async dislikeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+  const id = uuidv4();
+  await this.dataSource.query(
+    `
+    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+    VALUES ($1, $2, '${LikeCommentStatus.DISLIKE}', $3, $4, $5)
+    ON CONFLICT ("authorId", "postId")
+    DO UPDATE SET status = '${LikeCommentStatus.DISLIKE}', "createdAt" = $5
+    `,
+    [id, userId, postId, commentId, new Date()]
+  );
+  return true;
+}
+
+public async noneStatusComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+  const id = uuidv4();
+  await this.dataSource.query(
+    `
+    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+    VALUES ($1, $2, '${LikeCommentStatus.NONE}', $3, $4, $5)
+    ON CONFLICT ("authorId", "postId")
+    DO UPDATE SET status = '${LikeCommentStatus.NONE}', "createdAt" = $5
+    `,
+    [id, userId, postId, commentId, new Date()]
+  );
+  return true;
+}  
 }

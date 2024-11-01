@@ -93,8 +93,8 @@ export class BlogsAdminController {
     
     const blogsPostsResults = await this.blogsQueryRepository.getBlogPosts(
       pagination,
+      user?.userId,
       blogId,
-      user?.userId
     )
 
     if (!blogsPostsResults || blogsPostsResults.items.length === 0) {
