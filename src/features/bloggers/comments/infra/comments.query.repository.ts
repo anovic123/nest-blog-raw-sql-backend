@@ -29,47 +29,47 @@ export class CommentsQueryRepository {
     const {
       pageNumber,
       pageSize,
-      searchNameTerm,
       sortBy,
       sortDirection
-    } = pagination
-
+    } = pagination;
+  
     const query = `
       SELECT * FROM "comments" WHERE "postId" = $1
       ORDER BY "${sortBy}" ${sortDirection.toUpperCase()}
       LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize}
-    `
-
+    `;
+  
     const commentsRes = await this.dataSource.query(query, [postId]);
+  
     const totalCountQuery = `
-      SELECT COUNT(*) FROM "blogs" WHERE "id" = $1
-    `
-
-    const totalCountRes = await this.dataSource.query(totalCountQuery, [postId])
-    const totalCount = parseInt(totalCountRes[0].count, 10)
-
+      SELECT COUNT(*) FROM "comments" WHERE "postId" = $1
+    `;
+  
+    const totalCountRes = await this.dataSource.query(totalCountQuery, [postId]);
+    const totalCount = parseInt(totalCountRes[0].count, 10);
+  
     const paginationResult = {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize,
       totalCount,
       items: commentsRes.length > 0 ? await Promise.all(commentsRes.map((p: Comments) => this.mapPostCommentsOutput(p, false, userId))) : []
-    }
-    return paginationResult
-  }
+    };
+    
+    return paginationResult;
+  }  
 
   public async getPostsCommentsById(
     commentsId: Comments['id'],
     userId?: User['id'],
     includePostId: boolean = false
   ): Promise<CommentViewModel | null> {
-
     const query = `
       SELECT * FROM "comments" WHERE id = $1
     `;
-
+  
     const res = await this.dataSource.query(query, [commentsId]);
-
+  
     return res.length > 0
       ? await this.mapPostCommentsOutput(res[0], includePostId, userId)
       : null;
@@ -80,46 +80,44 @@ export class CommentsQueryRepository {
     includePostId: boolean = false,
     userId?: string | null,
   ): Promise<CommentViewModel> {
-
-      const likes = await this.dataSource.query(
-        `
-          SELECT lp.*, (
-            SELECT "login" 
-            FROM "users" 
-            WHERE "users"."id" = lp."authorId"
-          ) AS "login"
-          FROM "like-comments" AS lp 
-          WHERE lp."commentId" = $1
-          ORDER BY lp."createdAt" ASC`
-        , [comment.id])
-
-        const userLike = userId ? likes.find((l: LikeComment) => l.authorId === userId) : null
-        const likesCount = likes.filter((l: LikeComment) => 
-          l.status === LikeCommentStatus.LIKE).length ?? 0
-        const dislikesCount = likes.filter((l: LikeComment) =>
-          l.status === LikeCommentStatus.DISLIKE
-        ).length ?? 0
-        const myStatus = userLike?.status ?? LikeCommentStatus.NONE
-
-      const commentForOutput: CommentViewModel = {
-        id: comment.id,
-        content: comment.content,
-        commentatorInfo: {
-          userId: comment.userId,
-          userLogin: comment.userLogin,
-        },
-        createdAt: comment.createdAt,
-        likesInfo: {
-          likesCount,
-          dislikesCount,
-          myStatus,
-        },
-      };
-    
-      if (includePostId) {
-        commentForOutput.postId = comment.postId;
-      }
+    const likes = await this.dataSource.query(
+      `
+        SELECT lp.*, (
+          SELECT "login" 
+          FROM "users" 
+          WHERE "users"."id" = lp."authorId"
+        ) AS "login"
+        FROM "like-comments" AS lp 
+        WHERE lp."commentId" = $1
+        ORDER BY lp."createdAt" DESC
+      `,
+      [comment.id]
+    );
   
-      return commentForOutput;
-  }
+    const userLike = userId ? likes.find((l: LikeComment) => l.authorId === userId) : null;
+    const likesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length;
+    const dislikesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length;
+    const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
+  
+    const commentForOutput: CommentViewModel = {
+      id: comment.id,
+      content: comment.content,
+      commentatorInfo: {
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+      },
+      createdAt: comment.createdAt,
+      likesInfo: {
+        likesCount,
+        dislikesCount,
+        myStatus,
+      },
+    };
+  
+    if (includePostId) {
+      commentForOutput.postId = comment.postId;
+    }
+  
+    return commentForOutput;
+  }  
 }

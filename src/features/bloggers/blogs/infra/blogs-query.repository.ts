@@ -115,7 +115,7 @@ export class BlogsQueryRepository {
   }
   
 
-  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): Promise<BlogPostOutputModel> {
+  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null): Promise<BlogPostOutputModel> {
     const likes = await this.dataSource.query(
       `
         SELECT lp.*, (
@@ -125,38 +125,41 @@ export class BlogsQueryRepository {
         ) AS "login"
         FROM "like-posts" AS lp 
         WHERE lp."postId" = $1
-        ORDER BY lp."createdAt" ASC`
-      , [post.id])
-
-    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null
-    const likesCount = likes.filter((l: LikePosts) => 
-      l.status === LikePostStatus.LIKE).length ?? 0
-    const dislikesCount = likes.filter((l: LikePosts) =>
-      l.status === LikePostStatus.DISLIKE
-    ).length ?? 0
-    const myStatus = userLike?.status ?? LikePostStatus.NONE
-    const newestLikes = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).slice(0, 3).map(l => ({
-      addedAt: l.createdAt,
-      userId: l.authorId,
-      login: l.login
-    }))
+        ORDER BY lp."createdAt" DESC
+      `,
+      [post.id]
+    );
+  
+    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null;
+    const likesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).length;
+    const dislikesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.DISLIKE).length;
+    const myStatus = userLike?.status ?? LikePostStatus.NONE;
     
+    const newestLikes = likes
+      .filter((l: LikePosts) => l.status === LikePostStatus.LIKE)
+      .slice(0, 3)
+      .map(l => ({
+        addedAt: l.createdAt.toISOString(),
+        userId: l.authorId,
+        login: l.login
+      }));
+  
     const postForOutput = {
-     id: post.id,
-     title: post.title,
-     shortDescription: post.shortDescription,
-     content: post.content,
-     blogId: post.blogId,
-     blogName: post.blogName,
-     createdAt: post.createdAt,
-     extendedLikesInfo: {
-       likesCount,
-       dislikesCount,
-       myStatus,
-       newestLikes
-     }
-    } 
- 
+      id: post.id,
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount,
+        dislikesCount,
+        myStatus,
+        newestLikes
+      }
+    };
+  
     return postForOutput;
-   }
+  }
 }

@@ -29,10 +29,10 @@ export class PostsQueryRepository {
       sortBy = 'createdAt',
       sortDirection = 'ASC',
     } = pagination;
-
+  
     const sortDirectionUpper = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
     const offset = (pageNumber - 1) * pageSize;
-  
+    
     const query = `
       SELECT * FROM "posts"
       ${postId ? 'WHERE "id" = $1' : ''}
@@ -50,11 +50,11 @@ export class PostsQueryRepository {
     const totalCountParams = postId ? [postId] : [];
     const totalCountRes = await this.dataSource.query(totalCountQuery, totalCountParams);
     const totalCount = parseInt(totalCountRes[0].count, 10);
-
-    const mappedItems =  blogsPostResult.length > 0 
-      ? await Promise.all(blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p, userId))) 
-      : []
   
+    const mappedItems = blogsPostResult.length > 0 
+      ? await Promise.all(blogsPostResult.map((p: BlogPostViewModel) => this.mapPostOutput(p, userId))) 
+      : [];
+    
     const paginationResult = {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -62,9 +62,10 @@ export class PostsQueryRepository {
       totalCount,
       items: mappedItems
     };
-  
-    return paginationResult
+    
+    return paginationResult;
   }
+  
 
   public async getPostsById(id: BlogPostViewModel['id'], userId?: User['id']): Promise<BlogPostOutputModel | null> {
     const query = `
@@ -78,7 +79,7 @@ export class PostsQueryRepository {
     return result
   }
   
-  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null | undefined): Promise<BlogPostOutputModel> {
+  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null): Promise<BlogPostOutputModel> {
     const likes = await this.dataSource.query(
       `
         SELECT lp.*, (
@@ -88,38 +89,41 @@ export class PostsQueryRepository {
         ) AS "login"
         FROM "like-posts" AS lp 
         WHERE lp."postId" = $1
-        ORDER BY lp."createdAt" ASC`
-      , [post.id])
-
-    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null
-    const likesCount = likes.filter((l: LikePosts) => 
-      l.status === LikePostStatus.LIKE).length ?? 0
-    const dislikesCount = likes.filter((l: LikePosts) =>
-      l.status === LikePostStatus.DISLIKE
-    ).length ?? 0
-    const myStatus = userLike?.status ?? LikePostStatus.NONE
-    const newestLikes = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).slice(0, 3).map(l => ({
-      addedAt: l.createdAt,
-      userId: l.authorId,
-      login: l.login
-    }))
+        ORDER BY lp."createdAt" DESC
+      `,
+      [post.id]
+    );
+  
+    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null;
+    const likesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).length;
+    const dislikesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.DISLIKE).length;
+    const myStatus = userLike?.status ?? LikePostStatus.NONE;
     
+    const newestLikes = likes
+      .filter((l: LikePosts) => l.status === LikePostStatus.LIKE)
+      .slice(0, 3)
+      .map(l => ({
+        addedAt: l.createdAt.toISOString(),  // Ensuring addedAt is a string
+        userId: l.authorId,
+        login: l.login
+      }));
+  
     const postForOutput = {
-     id: post.id,
-     title: post.title,
-     shortDescription: post.shortDescription,
-     content: post.content,
-     blogId: post.blogId,
-     blogName: post.blogName,
-     createdAt: post.createdAt,
-     extendedLikesInfo: {
-       likesCount,
-       dislikesCount,
-       myStatus,
-       newestLikes
-     }
-    } 
- 
+      id: post.id,
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount,
+        dislikesCount,
+        myStatus,
+        newestLikes
+      }
+    };
+  
     return postForOutput;
-   }
+  }
 }
