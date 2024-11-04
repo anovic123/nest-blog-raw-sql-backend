@@ -122,7 +122,11 @@ export class PostsController {
     @Query() query,
     @Req() request: RequestWithUser
   ) {
-    const user = request['id']
+    const user = request['user']
+
+    if (!postId) {
+      throw new NotFoundException('post id is required')
+    }
 
     const pagination = new Pagination(
       query,
@@ -132,7 +136,7 @@ export class PostsController {
     const result = await this.commentsQueryRepository.getPostsComments(
       postId,
       pagination,
-      user?.id
+      user?.userId
     )
 
     if (!result || result.items.length === 0) {

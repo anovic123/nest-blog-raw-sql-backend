@@ -80,6 +80,7 @@ export class CommentsQueryRepository {
     includePostId: boolean = false,
     userId?: string | null,
   ): Promise<CommentViewModel> {
+    console.log(comment?.id)
     const likes = await this.dataSource.query(
       `
         SELECT lp.*, (
@@ -91,16 +92,16 @@ export class CommentsQueryRepository {
         WHERE lp."commentId" = $1
         ORDER BY lp."createdAt" DESC
       `,
-      [comment.id]
+      [comment?.id]
     );
   
     const userLike = userId ? likes.find((l: LikeComment) => l.authorId === userId) : null;
-    const likesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length;
-    const dislikesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length;
+    const likesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length ?? 0;
+    const dislikesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length ?? 0;
     const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
   
     const commentForOutput: CommentViewModel = {
-      id: comment.id,
+      id: comment?.id,
       content: comment.content,
       commentatorInfo: {
         userId: comment.userId,
@@ -115,7 +116,7 @@ export class CommentsQueryRepository {
     };
   
     if (includePostId) {
-      commentForOutput.postId = comment.postId;
+      commentForOutput.postId = comment?.postId;
     }
   
     return commentForOutput;

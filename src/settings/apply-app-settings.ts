@@ -10,6 +10,20 @@ import cookieParser from 'cookie-parser';
 import { AppModule } from 'src/app.module';
 
 import { HttpExceptionFilter } from '../core/exception-filters/http-exception-filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+export function swaggerSetup(app: INestApplication) {
+  const config = new DocumentBuilder()
+    .setTitle('BLOGGER API')
+    .addBearerAuth()
+    .setVersion('1.0')
+    .build();
+ 
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'Blogger Swagger',
+  });
+}
 
 export const applyAppSettings = (app: INestApplication) => {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -19,6 +33,7 @@ export const applyAppSettings = (app: INestApplication) => {
   setAppExceptionsFilters(app);
 
   app.use(cookieParser());
+  swaggerSetup(app);
 };
 
 const setAppPipes = (app: INestApplication) => {
