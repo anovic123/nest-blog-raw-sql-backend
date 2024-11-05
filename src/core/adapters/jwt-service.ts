@@ -110,7 +110,7 @@ export class JwtService {
       await this.verifyToken<JwtRefreshPayloadExtended>(refreshToken);
     if (!decodedRefresh) return null;
 
-    console.log(decodedRefresh);
+
     const deviceData = await findSessionByDeviceId(decodedRefresh.deviceId);
     if (!deviceData) return null;
 

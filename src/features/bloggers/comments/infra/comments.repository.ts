@@ -91,63 +91,64 @@ export class CommentsRepository {
     return this.mapPostCommentsOutput(newComment)
  }
 
- public mapPostCommentsOutput(comment: Comments): CommentViewModel {
-  const commentForOutput = {
-    id: comment.id,
-    content: comment.content,
-    commentatorInfo: {
-      userId: comment.userId,
-      userLogin: comment.userLogin,
-    },
-    createdAt: comment.createdAt,
-    likesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: LikeCommentStatus.NONE,
-    },
-  };
-  return commentForOutput;
-}
+  public mapPostCommentsOutput(comment: Comments): CommentViewModel {
+    const commentForOutput = {
+      id: comment.id,
+      content: comment.content,
+      commentatorInfo: {
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+      },
+      createdAt: comment.createdAt,
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeCommentStatus.NONE,
+      },
+    };
+    return commentForOutput;
+  }
 
-public async likeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
-  const id = uuidv4();
-  await this.dataSource.query(
-    `
-    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
-    VALUES ($1, $2, '${LikeCommentStatus.LIKE}', $3, $4, $5)
-    ON CONFLICT ("authorId", "postId")
-    DO UPDATE SET status = '${LikeCommentStatus.LIKE}', "createdAt" = $5
-    `,
-    [id, userId, postId, commentId, new Date()]
-  );
-  return true;
-}
-
-public async dislikeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
-  const id = uuidv4();
-  await this.dataSource.query(
-    `
-    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
-    VALUES ($1, $2, '${LikeCommentStatus.DISLIKE}', $3, $4, $5)
-    ON CONFLICT ("authorId", "postId")
-    DO UPDATE SET status = '${LikeCommentStatus.DISLIKE}', "createdAt" = $5
-    `,
-    [id, userId, postId, commentId, new Date()]
-  );
-  return true;
-}
-
-public async noneStatusComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
-  const id = uuidv4();
-  await this.dataSource.query(
-    `
-    INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
-    VALUES ($1, $2, '${LikeCommentStatus.NONE}', $3, $4, $5)
-    ON CONFLICT ("authorId", "postId")
-    DO UPDATE SET status = '${LikeCommentStatus.NONE}', "createdAt" = $5
-    `,
-    [id, userId, postId, commentId, new Date()]
-  );
-  return true;
-}  
+  public async likeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+      VALUES ($1, $2, '${LikeCommentStatus.LIKE}', $3, $4, $5)
+      ON CONFLICT ("authorId", "commentId")
+      DO UPDATE SET status = '${LikeCommentStatus.LIKE}', "createdAt" = $5
+      `,
+      [id, userId, postId, commentId, new Date()]
+    );
+    return true;
+  }
+  
+  public async dislikeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+      VALUES ($1, $2, '${LikeCommentStatus.DISLIKE}', $3, $4, $5)
+      ON CONFLICT ("authorId", "commentId")
+      DO UPDATE SET status = '${LikeCommentStatus.DISLIKE}', "createdAt" = $5
+      `,
+      [id, userId, postId, commentId, new Date()]
+    );
+    return true;
+  }
+  
+  public async noneStatusComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) {
+    const id = uuidv4();
+    await this.dataSource.query(
+      `
+      INSERT INTO "like-comments" ("id", "authorId", status, "postId", "commentId", "createdAt")
+      VALUES ($1, $2, '${LikeCommentStatus.NONE}', $3, $4, $5)
+      ON CONFLICT ("authorId", "commentId")
+      DO UPDATE SET status = '${LikeCommentStatus.NONE}', "createdAt" = $5
+      `,
+      [id, userId, postId, commentId, new Date()]
+    );
+    return true;
+  }
+  
 }

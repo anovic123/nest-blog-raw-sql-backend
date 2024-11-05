@@ -61,7 +61,7 @@ export class UsersRepository {
   `;
 
     const result = await this.datasource.query(query, [id]);
-    console.log(result)
+
     return result[1] === 1;
   }
 

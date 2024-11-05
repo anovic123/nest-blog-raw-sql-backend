@@ -32,11 +32,11 @@ export class CommentsController {
 
     const comment = await this.commentsQueryRepository.getPostsCommentsById(commentId, user?.userId, true)
 
-    if (!comment) {
+    if (!comment || !comment.postId) {
       throw new NotFoundException()
     }
 
-    return this.commandBus.execute(new LikeCommentCommand(commentId, comment?.likesInfo?.myStatus, body.likeStatus, user?.userId, comment?.postId!))
+    return this.commandBus.execute(new LikeCommentCommand(commentId, comment?.likesInfo?.myStatus, body.likeStatus, user?.userId, comment?.postId))
   }
 
   @Public()

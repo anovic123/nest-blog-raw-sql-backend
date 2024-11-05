@@ -35,11 +35,13 @@ export class CommentsQueryRepository {
   
     const query = `
       SELECT * FROM "comments" WHERE "postId" = $1
-      ORDER BY "${sortBy}" ${sortDirection.toUpperCase()}
-      LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize}
+      ORDER BY "${sortBy}" ${sortDirection}
+      LIMIT $2 OFFSET $3
     `;
+
+    const offset = (pageNumber - 1) * pageSize;
   
-    const commentsRes = await this.dataSource.query(query, [postId]);
+    const commentsRes = await this.dataSource.query(query, [postId, pageSize, offset]);
   
     const totalCountQuery = `
       SELECT COUNT(*) FROM "comments" WHERE "postId" = $1
@@ -53,10 +55,13 @@ export class CommentsQueryRepository {
       page: pageNumber,
       pageSize,
       totalCount,
-      items: commentsRes.length > 0 ? await Promise.all(commentsRes.map((p: Comments) => this.mapPostCommentsOutput(p, false, userId))) : []
+      items: commentsRes.length > 0 
+        ? await Promise.all(commentsRes.map((p: Comments) => this.mapPostCommentsOutput(p, false, userId)))
+        : [],
     };
     
     return paginationResult;
+    
   }  
 
   public async getPostsCommentsById(
@@ -80,7 +85,7 @@ export class CommentsQueryRepository {
     includePostId: boolean = false,
     userId?: string | null,
   ): Promise<CommentViewModel> {
-    console.log(comment?.id)
+
     const likes = await this.dataSource.query(
       `
         SELECT lp.*, (
@@ -95,9 +100,9 @@ export class CommentsQueryRepository {
       [comment?.id]
     );
   
-    const userLike = userId ? likes.find((l: LikeComment) => l.authorId === userId) : null;
-    const likesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length ?? 0;
-    const dislikesCount = likes.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length ?? 0;
+    const userLike = userId ? likes?.find((l: LikeComment) => l.authorId === userId) : null;
+    const likesCount = likes?.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length ?? 0;
+    const dislikesCount = likes?.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length ?? 0;
     const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
   
     const commentForOutput: CommentViewModel = {
@@ -114,6 +119,7 @@ export class CommentsQueryRepository {
         myStatus,
       },
     };
+
   
     if (includePostId) {
       commentForOutput.postId = comment?.postId;

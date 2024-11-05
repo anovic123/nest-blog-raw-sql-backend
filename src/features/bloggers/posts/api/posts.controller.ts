@@ -122,12 +122,13 @@ export class PostsController {
     @Query() query,
     @Req() request: RequestWithUser
   ) {
-    const user = request['user']
-
+    
     if (!postId) {
       throw new NotFoundException('post id is required')
     }
-
+    
+    const user = request['user']
+    
     const pagination = new Pagination(
       query,
       COMMENTS_SORTING_PROPERTIES
