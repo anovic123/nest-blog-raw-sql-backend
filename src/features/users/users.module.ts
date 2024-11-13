@@ -6,12 +6,10 @@ import { UsersQueryRepository } from './infra/users-query.repository';
 import { AuthRepository } from '../auth/infra/auth.repository';
 import { DeleteUserUseCase } from './application/use-cases/delete-users.use-case';
 import { UsersRepository } from './infra/users.repository';
-import { EmailIsExistConstraint, LoginIsExistConstraint } from '../../core/decorators';
 
 @Module({
   imports: [
     CqrsModule,
-    UsersModule,
     AdaptersModule
   ],
   controllers: [UsersController],
@@ -19,8 +17,6 @@ import { EmailIsExistConstraint, LoginIsExistConstraint } from '../../core/decor
     UsersQueryRepository,
     AuthRepository,
     UsersRepository,
-    EmailIsExistConstraint,
-    LoginIsExistConstraint,
     DeleteUserUseCase
   ],
   exports: [

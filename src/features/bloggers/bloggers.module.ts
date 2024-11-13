@@ -18,8 +18,6 @@ import { CreatePostBlogUseCase } from "./blogs/application/use-cases/create-post
 import { UpdateBlogPostUseCase } from "./blogs/application/use-cases/update-blog-post.use-case";
 import { DeleteBlogPostUseCase } from "./blogs/application/use-cases/delete-post-blog.use-case";
 
-import { PostIsExistConstraint } from "src/core/decorators/validate/is-post-exist.decorator";
-import { BlogIsExistConstraint } from "src/core/decorators/validate/is-blog-exist.decorator";
 import { CreatePostCommentUseCase } from "./posts/application/use-cases/create-post-comment";
 import { CommentsRepository } from "./comments/infra/comments.repository";
 import { UsersRepository } from "../users/infra/users.repository";
@@ -54,9 +52,7 @@ import { LikeCommentUseCase } from "./comments/application/use-cases/like-commen
     CommentsRepository,
     CommentsQueryRepository,
     UsersRepository,
-    PostIsExistConstraint,
-    BlogIsExistConstraint
   ],
-  exports: []
+  exports: [PostsRepository, BlogsRepository]
 })
 export class BloggersModule {}

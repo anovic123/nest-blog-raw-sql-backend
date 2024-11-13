@@ -10,6 +10,9 @@ import { UsersModule } from './features/users/users.module';
 import { TestingModule } from './features/testing/testing.module';
 import { SecurityModule } from './features/security/security.module';
 import { BloggersModule } from './features/bloggers/bloggers.module';
+import { EmailIsExistConstraint, LoginIsExistConstraint } from '@core/decorators';
+import { PostIsExistConstraint } from '@core/decorators/validate/is-post-exist.decorator';
+import { BlogIsExistConstraint } from '@core/decorators/validate/is-blog-exist.decorator';
 
 const modules = [
   AuthModule,
@@ -48,6 +51,11 @@ const modules = [
     ...modules
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    EmailIsExistConstraint,
+    LoginIsExistConstraint,
+    PostIsExistConstraint,
+    BlogIsExistConstraint
+  ],
 })
 export class AppModule {}
