@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApiBasicAuth, ApiExtraModels, ApiQuery, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
 import { BasicAuthGuard } from '../../../core/guards/auth-basic.guards';
 
@@ -48,6 +48,9 @@ export class UsersController {
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Get users',
+  })
   public async getUsers(@Query() query) {
     const pagination: PaginationWithSearchLoginAndEmailTerm =
       new PaginationWithSearchLoginAndEmailTerm(
@@ -63,6 +66,9 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'Created', type: UserOutputModel })
   @ApiResponse({ status: 400, description: 'Validations errors' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Create new user',
+  })
   public async registerUser(@Body() createModel: UserCreateModel) {
     return this.commandBus.execute(new CreateUserCommand(createModel));
   }
@@ -71,6 +77,9 @@ export class UsersController {
   @ApiResponse({ status: 204, description: 'Deleted' })
   @ApiResponse({ status: 404, description: 'Not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Delete user by id',
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   public async deleteUser(@Param('id') id: string) {
     return this.commandBus.execute(new DeleteUserCommand(id));

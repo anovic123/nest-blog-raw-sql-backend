@@ -2,25 +2,33 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards 
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Response } from 'express';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+
+import { AuthGuard } from '../../../core/guards/auth.guard';
+import { RefreshTokenGuard } from '../../../core/guards/refresh-token.guard';
 
 import { UserCreateModel } from '../../users/api/models/input/create-user.input.model';
-import { CreateUserCommand } from '../application/use-cases/create-users.use-case';
 import { BodyLoginModel } from './models/input/body-login.input.model';
-import { AuthGuard } from '../../../core/guards/auth.guard';
-import { RequestWithUser } from '../../../base/types/request';
-import { AuthService } from '../application/auth.service';
-import { GetUserInfoQuery } from '../application/use-cases/user-info.query.use-case';
 import { EmailResendingModel } from './models/input/email-resending.input.model';
-import { ResendCodeCommand } from '../application/use-cases/resend-code.use-case';
-import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 import { NewPasswordInputModel } from './models/input/new-password.input.model';
-import { NewPasswordCommand } from '../application/use-cases/new-password.use-case';
 import { CodeInputModel } from './models/input/code.input.model';
+import { ErrorResponseDto } from 'src/base/models/errors-messages.base.model';
+import { AccessToken } from './models/input/access-token.model';
+
+import { ResendCodeCommand } from '../application/use-cases/resend-code.use-case';
+import { CreateUserCommand } from '../application/use-cases/create-users.use-case';
+import { NewPasswordCommand } from '../application/use-cases/new-password.use-case';
+import { GetUserInfoQuery } from '../application/use-cases/user-info.query.use-case';
 import { ConfirmEmailCommand } from '../application/use-cases/confirm-email.use-case';
-import { CreateSessionCommand } from '../application/use-cases/create-session';
-import { RefreshTokenGuard } from '../../../core/guards/refresh-token.guard';
+import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
 import { LogoutUserCommand } from '../application/use-cases/logout-user.use-case';
+
+import { AuthService } from '../application/auth.service';
+
+import { RequestWithUser } from '../../../base/types/request';
+
+import { CreateSessionCommand } from '../application/use-cases/create-session';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -33,6 +41,14 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Success', type: AccessToken })
+  @ApiResponse({ status: 400, description: 'Validation', type: ErrorResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Log in a user',
+    description: 'Logs in a user with their credentials and returns access and refresh tokens.',
+  })
   public async loginUser(
     @Body() bodyLoginEmail: BodyLoginModel,
     @Res({ passthrough: true }) res: Response,
@@ -60,9 +76,14 @@ export class AuthController {
       .send({ accessToken });
   }
 
+  @SkipThrottle()
+  @ApiSecurity('refreshToken')
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Generate new pair of access and refresh tokens',
+  })
   public async refreshToken(@Res() res: Response, @Req() req: RequestWithUser) {
     const requestRefreshToken = req.cookies['refreshToken'];
 
@@ -81,6 +102,12 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiSecurity('refreshToken')
+  @ApiResponse({ status: 204, description: 'Success' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Send correct refreshToken that will be revoked',
+  })
   public async logoutUser(
     @Res() response: Response,
     @Req() request: RequestWithUser,
@@ -98,6 +125,12 @@ export class AuthController {
 
   @Post('/password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ status: 204, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Password recovery via Email confirmation',
+  })
   public async passwordRecovery(@Body() emailModel: EmailResendingModel) {
     const { email } = emailModel;
     return this.commandBus.execute(new PasswordRecoveryCommand(email));
@@ -105,24 +138,48 @@ export class AuthController {
 
   @Post('/new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ status: 204, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Confirm Password recovery',
+  })
   public async newPassword(@Body() newPasswordModel: NewPasswordInputModel) {
     return this.commandBus.execute(new NewPasswordCommand(newPasswordModel));
   }
 
   @Post('/registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ status: 204, description: 'Email was verified. Account was activated' })
+  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Confirm registration',
+  })
   public async registrationConfirmation(@Body() codeBody: CodeInputModel) {
     return this.commandBus.execute(new ConfirmEmailCommand(codeBody.code));
   }
 
   @Post('/registration')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ status: 204, description: 'Email with confirmation code will be send to passed email address' })
+  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Registration in the system',
+  })
   public async registerUser(@Body() createModel: UserCreateModel) {
     return this.commandBus.execute(new CreateUserCommand(createModel));
   }
 
   @Post('/registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ status: 204, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiOperation({
+    summary: 'Resend confirmation registration email',
+  })
   public async registrationEmailResending(
     @Body() emailResendingModel: EmailResendingModel,
   ) {
@@ -132,6 +189,12 @@ export class AuthController {
   @SkipThrottle()
   @UseGuards(AuthGuard)
   @Get('/me')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Get information about current user',
+  })
   public async getMe(@Req() request: RequestWithUser) {
     const user = request['user']
 

@@ -18,6 +18,7 @@ export function swaggerSetup(app: INestApplication) {
     .addBearerAuth()
     .addBasicAuth()
     .setVersion('1.0')
+    .addApiKey({ type: 'apiKey', name: 'refreshToken', in: 'cookie' }, 'refreshToken')
     .build();
  
   const document = SwaggerModule.createDocument(app, config);
