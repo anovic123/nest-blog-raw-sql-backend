@@ -40,6 +40,7 @@ const modules = [
         ssl: {
           rejectUnauthorized: false,
         },
+        logging: true
       }),
     }),
     ThrottlerModule.forRoot([

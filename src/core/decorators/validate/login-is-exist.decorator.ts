@@ -6,12 +6,13 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UsersRepository } from 'src/features/users/infra/users.repository';
+
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 
 @ValidatorConstraint({ name: 'LoginIsExist', async: true })
 @Injectable()
 export class LoginIsExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersTypeormRepository) {}
   async validate(value: any) {
     const loginIsExist = await this.usersRepository.loginIsExist(value);
     return !loginIsExist;

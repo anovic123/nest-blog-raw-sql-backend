@@ -3,8 +3,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { CodeInputModel } from '../../api/models/input/code.input.model';
 
-import { UsersQueryRepository } from '../../../users/infra/users-query.repository';
-import { UsersRepository } from '../../../users/infra/users.repository';
+import { UsersSqlQueryRepository } from '../../../users/infra/users-sql-query.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
 export class ConfirmEmailCommand {
   constructor(public readonly code: CodeInputModel['code']) {}
@@ -15,8 +16,8 @@ export class ConfirmEmailUseCase
   implements ICommandHandler<ConfirmEmailCommand>
 {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersQueryRepository: UserTypeormQueryRepository,
+    private readonly usersRepository: UsersTypeormRepository,
   ) {}
 
   async execute(command: ConfirmEmailCommand) {

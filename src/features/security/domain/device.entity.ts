@@ -28,4 +28,26 @@ export class AuthDevice {
 
   @Column({ type: "varchar", nullable: false })
   device_name: string;
+
+  static createUserDevice(session: AuthDevice) {
+    const newUserDevice = new AuthDevice()
+
+    const { 
+      device_id,
+      device_name,
+      exp,
+      id,
+      ip,
+      user_id
+     } = session
+
+     newUserDevice.id = id
+     newUserDevice.device_id = device_id
+     newUserDevice.exp = exp
+     newUserDevice.device_name = device_name
+     newUserDevice.ip = ip
+     newUserDevice.user_id = user_id
+
+     return newUserDevice
+  }
 }

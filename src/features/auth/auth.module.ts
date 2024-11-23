@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CqrsModule } from '@nestjs/cqrs';
 
@@ -6,8 +7,13 @@ import { AuthController } from './api/auth.controller';
 
 import { AuthService } from './application/auth.service';
 
-import { UsersQueryRepository } from '../users/infra/users-query.repository';
+import { User } from '../users/domain/users.entity';
+
+import { UsersSqlQueryRepository } from '../users/infra/users-sql-query.repository';
 import { UsersRepository } from '../users/infra/users.repository';
+import { UserTypeormQueryRepository } from '../users/infra/users-typeorm-query.repository';
+import { UsersTypeormRepository } from '../users/infra/users-typeorm.repository';
+import { AuthTypeormRepository } from './infra/auth-typeorm.repository';
 
 import {
   EmailIsExistConstraint,
@@ -15,8 +21,6 @@ import {
 } from 'src/core/decorators';
 
 import { AdaptersModule } from 'src/core/adapters/adapters.module';
-
-import { AuthRepository } from './infra/auth.repository';
 
 import { GetUserInfoHandler } from './application/use-cases/user-info.query.use-case';
 import { ResendCodeCommandUseCase } from './application/use-cases/resend-code.use-case';
@@ -33,7 +37,8 @@ import { CreateUserUseCase } from './application/use-cases/create-users.use-case
   imports: [
     AdaptersModule,
     CqrsModule,
-    SecurityModule
+    SecurityModule,
+    TypeOrmModule.forFeature([ User ])
   ],
   providers: [
     ResendCodeCommandUseCase,
@@ -46,8 +51,10 @@ import { CreateUserUseCase } from './application/use-cases/create-users.use-case
     CreateSessionUseCase,
     GetUserInfoHandler,
     AuthService,
-    AuthRepository,
-    UsersQueryRepository,
+    UsersTypeormRepository,
+    AuthTypeormRepository,
+    UsersSqlQueryRepository,
+    UserTypeormQueryRepository,
     EmailIsExistConstraint,
     LoginIsExistConstraint,
     UsersRepository,

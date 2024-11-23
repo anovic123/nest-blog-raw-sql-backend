@@ -16,7 +16,9 @@ export function swaggerSetup(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('BLOGGER API')
     .addBearerAuth()
+    .addBasicAuth()
     .setVersion('1.0')
+    .addApiKey({ type: 'apiKey', name: 'refreshToken', in: 'cookie' }, 'refreshToken')
     .build();
  
   const document = SwaggerModule.createDocument(app, config);

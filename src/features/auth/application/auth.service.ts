@@ -1,13 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+
 import { CryptoService } from '../../../core/adapters/crypto-service';
-import { UsersQueryRepository } from '../../users/infra/users-query.repository';
+
 import { User } from '../../users/domain/users.entity';
+
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
       private readonly cryptoService: CryptoService,
-      private readonly usersQueryRepository: UsersQueryRepository
+      private readonly usersQueryRepository: UserTypeormQueryRepository
   ) {}
 
   public async checkCredentials(
