@@ -2,15 +2,15 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestj
 
 import { JwtService } from '../../../core/adapters/jwt-service';
 
-import { SecurityRepository } from '../infra/security.repository';
-import { SecurityQueryRepository } from '../infra/security.query.repository';
+import { SecurityTypeormRepository } from '../infra/securite-typeorm.repository';
+import { SecurityTypeormQueryRepository } from '../infra/securite-typeorm.query.repository';
 
 @Injectable()
 export class SecurityService {
   constructor(
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityTypeormRepository,
     private readonly jwtService: JwtService,
-    private readonly securityQueryRepository: SecurityQueryRepository,
+    private readonly securityQueryRepository: SecurityTypeormQueryRepository,
   ) {}
 
   public async deleteSessionById(userId: string, deviceId: string) {

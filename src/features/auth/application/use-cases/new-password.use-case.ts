@@ -1,11 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { NewPasswordInputModel } from '../../api/models/input/new-password.input.model';
 
-import { UsersQueryRepository } from '../../../users/infra/users-query.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
+
 import { CryptoService } from '../../../../core/adapters/crypto-service';
-import { UsersRepository } from '../../../users/infra/users.repository';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
 export class NewPasswordCommand {
   constructor(public readonly body: NewPasswordInputModel) {}
@@ -14,9 +15,9 @@ export class NewPasswordCommand {
 @CommandHandler(NewPasswordCommand)
 export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepository: UserTypeormQueryRepository,
     private readonly cryptoService: CryptoService,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersTypeormRepository,
   ) {}
 
   async execute(command: NewPasswordCommand): Promise<boolean> {

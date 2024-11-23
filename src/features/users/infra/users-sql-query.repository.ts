@@ -6,7 +6,7 @@ import { UserOutputModel } from '../../auth/api/models/output/user.output.model'
 import { User } from '../domain/users.entity';
 
 @Injectable()
-export class UsersQueryRepository {
+export class UsersSqlQueryRepository {
   constructor(
     @InjectDataSource() protected dataSource: DataSource
   ) {}

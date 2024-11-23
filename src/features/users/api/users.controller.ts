@@ -8,7 +8,7 @@ import { UserOutputModel } from '../../auth/api/models/output/user.output.model'
 import { UserCreateModel } from './models/input/create-user.input.model';
 import { PaginationOutput, PaginationQueryDto, PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagination.base.model';
 
-import { UsersQueryRepository } from '../infra/users-query.repository';
+import { UserTypeormQueryRepository } from '../infra/users-typeorm-query.repository';
 
 import { CreateUserCommand } from '../../auth/application/use-cases/create-users.use-case';
 
@@ -24,7 +24,7 @@ export const USERS_SORTING_PROPERTIES: SortingPropertiesType<UserOutputModel> =
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersTypeormQueryRepository: UserTypeormQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -58,7 +58,7 @@ export class UsersController {
         USERS_SORTING_PROPERTIES
       )
 
-    return this.usersQueryRepository.getAllUsers(pagination)
+    return this.usersTypeormQueryRepository.getAllUsers(pagination)
   }
 
   @Post()

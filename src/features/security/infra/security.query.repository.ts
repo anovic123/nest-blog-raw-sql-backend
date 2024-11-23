@@ -14,7 +14,7 @@ export class SecurityQueryRepository {
     protected dataSource: DataSource,
   ) {}
 
-  public async findSessionsByUserId(id: User['id']) {
+  public async findSessionsByUserId(id: User['id']): Promise<DevicesSessionViewModel[]> {
 
     const query = `
       SELECT * from "devices"

@@ -1,8 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { EmailsManager } from '../../../../core/adapters/email.manager';
-import { UsersQueryRepository } from '../../../users/infra/users-query.repository';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersRepository } from '../../../users/infra/users.repository';
+
+import { EmailsManager } from '../../../../core/adapters/email.manager';
+
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}
@@ -14,8 +16,8 @@ export class PasswordRecoveryUseCase
 {
   constructor(
     private readonly emailsManager: EmailsManager,
-    private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersQueryRepository: UserTypeormQueryRepository,
+    private readonly usersRepository: UsersTypeormRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {

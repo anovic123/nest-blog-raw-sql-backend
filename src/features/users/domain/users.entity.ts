@@ -25,4 +25,21 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  static createUser(user: Omit<User, 'isConfirmed'>): User {
+    const newUser = new User()
+
+    const { confirmationCode, createdAt, email, expirationDate, id, login, passwordHash } = user
+
+    newUser.id = id,
+    newUser.email = email,
+    newUser.passwordHash = passwordHash,
+    newUser.expirationDate = expirationDate,
+    newUser.createdAt = createdAt,
+    newUser.login = login,
+    newUser.confirmationCode = confirmationCode
+    newUser.isConfirmed = false
+
+    return newUser
+  }
 }

@@ -5,10 +5,10 @@ import { randomUUID } from 'crypto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { CryptoService } from '../../../../core/adapters/crypto-service';
-import { AuthRepository } from '../../infra/auth.repository';
 import { EmailsManager } from '../../../../core/adapters/email.manager';
 import { User } from '../../../users/domain/users.entity';
 import { UserOutputModel } from '../../api/models/output/user.output.model';
+import { AuthTypeormRepository } from '../../infra/auth-typeorm.repository';
 
 class UserInputModel {
   login: string;
@@ -17,15 +17,14 @@ class UserInputModel {
 }
 
 export class CreateUserCommand {
-  constructor(public readonly body: UserInputModel) {
-  }
+  constructor(public readonly body: UserInputModel) {}
 }
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly cryptoService: CryptoService,
-    private readonly authRepository: AuthRepository,
+    private readonly authRepository: AuthTypeormRepository,
     private readonly emailsManager: EmailsManager
   ) {}
 

@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { EmailResendingModel } from '../../api/models/input/email-resending.input.model';
 
-import { UsersRepository } from '../../../users/infra/users.repository';
-import { UsersQueryRepository } from '../../../users/infra/users-query.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
 import { EmailsManager } from '../../../../core/adapters/email.manager';
 
@@ -18,8 +18,8 @@ export class ResendCodeCommandUseCase
   implements ICommandHandler<ResendCodeCommand>
 {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersQueryRepository: UserTypeormQueryRepository,
+    private readonly usersRepository: UsersTypeormRepository,
     private readonly emailsManager: EmailsManager,
   ) {}
 

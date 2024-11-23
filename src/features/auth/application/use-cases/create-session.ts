@@ -6,7 +6,7 @@ import {
   JwtService,
 } from '../../../../core/adapters/jwt-service';
 
-import { SecurityRepository } from '../../../security/infra/security.repository';
+import { SecurityTypeormRepository } from 'src/features/security/infra/securite-typeorm.repository';
 
 import { User } from '../../../users/domain/users.entity';
 
@@ -22,7 +22,7 @@ export class CreateSessionCommand {
 export class CreateSessionUseCase {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityTypeormRepository,
   ) {}
 
   async execute(command: CreateSessionCommand) {

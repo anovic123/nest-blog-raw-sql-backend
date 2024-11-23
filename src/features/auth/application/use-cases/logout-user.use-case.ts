@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UnauthorizedException } from '@nestjs/common';
 
-import { SecurityRepository } from '../../../security/infra/security.repository';
+import { SecurityTypeormRepository } from 'src/features/security/infra/securite-typeorm.repository';
 import {
   JwtRefreshPayloadExtended,
   JwtService,
@@ -14,7 +14,7 @@ export class LogoutUserCommand {
 @CommandHandler(LogoutUserCommand)
 export class LogoutUserUseCase implements ICommandHandler<LogoutUserCommand> {
   constructor(
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityTypeormRepository,
     private jwtService: JwtService,
   ) {}
 

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { SecurityRepository } from '../../../security/infra/security.repository';
+import { SecurityTypeormRepository } from 'src/features/security/infra/securite-typeorm.repository';
 
 import {
   JwtRefreshPayloadExtended,
@@ -17,7 +17,7 @@ export class RefreshTokenUseCase
   implements ICommandHandler<RefreshTokenCommand>
 {
   constructor(
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityTypeormRepository,
     private readonly jwtService: JwtService,
   ) {}
 

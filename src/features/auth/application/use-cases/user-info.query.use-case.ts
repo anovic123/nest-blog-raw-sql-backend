@@ -3,7 +3,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserInfoOutputModel } from '../../api/models/output/user-info.output.model';
 
-import { UsersRepository } from '../../../users/infra/users.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 
 export class GetUserInfoQuery {
   constructor(public readonly id: string) {}
@@ -11,7 +11,7 @@ export class GetUserInfoQuery {
 
 @QueryHandler(GetUserInfoQuery)
 export class GetUserInfoHandler implements IQueryHandler<GetUserInfoQuery> {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersTypeormRepository) {}
 
   async execute(query: GetUserInfoQuery): Promise<UserInfoOutputModel> {
     const { id } = query;
