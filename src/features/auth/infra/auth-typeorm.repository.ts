@@ -16,11 +16,11 @@ export class AuthTypeormRepository {
 
     const result = await this.authRepository.save(newUser) 
 
-    const checkUser = await this.authRepository.createQueryBuilder('u').where('u.id = :id', { id: result.id }).getOne()
+    // const checkUser = await this.authRepository.createQueryBuilder('u').where('u.id = :id', { id: result.id }).getOne()
 
-    if (!checkUser) {
-      throw new Error('User was not created')
-    }
+    // if (!checkUser) {
+    //   throw new Error('User was not created')
+    // }
 
     return this.outputModelUser(newUser)
   }

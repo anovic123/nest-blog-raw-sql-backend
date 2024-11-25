@@ -30,10 +30,10 @@ export class SecurityTypeormRepository {
     .update(AuthDevice)
     .set({
         exp: refreshTokenExp
-    }).where("s.device_id = :device_id", {
+    }).where("device_id = :device_id", {
       device_id: deviceId,
     })
-    .andWhere("s.user_id = :user_id", {
+    .andWhere("user_id = :user_id", {
       user_id: userId
     })
     .execute()
