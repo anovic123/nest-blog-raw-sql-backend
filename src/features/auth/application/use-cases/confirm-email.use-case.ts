@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 import { CodeInputModel } from '../../api/models/input/code.input.model';
 
@@ -25,18 +25,21 @@ export class ConfirmEmailUseCase
     const user = await this.usersQueryRepository.findUserByConfirmationCode(
       command.code,
     );
+
+    if (user?.isConfirmed) {
+      throw new BadRequestException('email is confirmed')
+    }
     if (
       !user ||
-      user.isConfirmed ||
       user.confirmationCode !== command.code ||
       user.expirationDate < new Date()
     ) {
-      throw new HttpException('code is wrong', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('code is wrong');
     }
     const res = await this.usersRepository.updateConfirmation(user.id);
 
     if (!res) {
-      throw new HttpException('oops', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('oops');
     }
   }
 }

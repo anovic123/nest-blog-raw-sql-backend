@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { EmailResendingModel } from '../../api/models/input/email-resending.input.model';
@@ -29,11 +29,11 @@ export class ResendCodeCommandUseCase
     const user = await this.usersQueryRepository.findUserByLoginOrEmail(email);
 
     if (!user) {
-      throw new HttpException('email is not existed', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('email is not existed');
     }
 
     if (user.isConfirmed) {
-      throw new HttpException('email is confirmed', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('email is confirmed');
     }
 
     const newCode = uuidv4();
