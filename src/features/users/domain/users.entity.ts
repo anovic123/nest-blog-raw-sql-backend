@@ -1,4 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { randomUUID } from 'crypto';
+import { add } from 'date-fns';
 
 @Entity('users')
 export class User {
@@ -26,18 +28,19 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  static createUser(user: Omit<User, 'isConfirmed'>): User {
+  static createUser(login: User['login'], passwordHash: User['passwordHash'], email: User['email']): User {
     const newUser = new User()
 
-    const { confirmationCode, createdAt, email, expirationDate, id, login, passwordHash } = user
-
-    newUser.id = id,
+    newUser.id = randomUUID(),
     newUser.email = email,
     newUser.passwordHash = passwordHash,
-    newUser.expirationDate = expirationDate,
-    newUser.createdAt = createdAt,
+    newUser.expirationDate = add(new Date(), {
+      hours: 1,
+      minutes: 3
+    }),
+    newUser.createdAt = new Date(),
     newUser.login = login,
-    newUser.confirmationCode = confirmationCode
+    newUser.confirmationCode = randomUUID()
     newUser.isConfirmed = false
 
     return newUser

@@ -11,10 +11,8 @@ export class AuthTypeormRepository {
     private readonly authRepository: Repository<User>
   ) {}
 
-  public async createUser(user: Omit<User, 'isConfirmed'>): Promise<UserOutputModel> {
-    const newUser = User.createUser(user)
-
-    const result = await this.authRepository.save(newUser) 
+  public async createUser(user: User): Promise<UserOutputModel> {
+    const result = await this.authRepository.save(user) 
 
     // const checkUser = await this.authRepository.createQueryBuilder('u').where('u.id = :id', { id: result.id }).getOne()
 
@@ -22,7 +20,7 @@ export class AuthTypeormRepository {
     //   throw new Error('User was not created')
     // }
 
-    return this.outputModelUser(newUser)
+    return this.outputModelUser(user)
   }
 
   public outputModelUser(user: User): UserOutputModel {
