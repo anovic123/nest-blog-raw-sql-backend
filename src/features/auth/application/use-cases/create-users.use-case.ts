@@ -1,7 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { v4 as uuidv4 } from 'uuid';
-import { add } from 'date-fns';
-import { randomUUID } from 'crypto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { CryptoService } from '../../../../core/adapters/crypto-service';
@@ -33,20 +30,9 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
 
     const passwordHash = await this.cryptoService.generateHash(password)
 
-    const user: Omit<User, 'isConfirmed'> = {
-      id: uuidv4(),
-      email,
-      login,
-      passwordHash,
-      confirmationCode: uuidv4(),
-      expirationDate: add(new Date(), {
-        hours: 1,
-        minutes: 3
-      }),
-      createdAt: new Date()
-    }
+    const newUser = User.createUser(login, passwordHash, email)
 
-    const createdResult = await this.authRepository.createUser(user);
+    const createdResult = await this.authRepository.createUser(newUser);
 
     if (!createdResult) {
       throw new HttpException(
@@ -55,9 +41,11 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       );
     }
 
-    await this.emailsManager.sendConfirmationMessage({
-      email: user.email,
-      confirmationCode: user.confirmationCode,
+    this.emailsManager.sendConfirmationMessage({
+      email: newUser.email,
+      confirmationCode: newUser.confirmationCode,
+    }).catch(error => {
+      console.error('Failed to send confirmation email:', error);
     });
 
     return createdResult;
