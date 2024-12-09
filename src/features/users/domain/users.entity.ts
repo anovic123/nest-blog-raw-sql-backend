@@ -1,12 +1,10 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
+import { BaseEntity } from '@core/entities/base.entity';
 
 @Entity('users')
-export class User {
-  @PrimaryColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @Column({ type: "varchar", nullable: false })
   email: string;
 
@@ -24,9 +22,6 @@ export class User {
 
   @Column({ type: "varchar", nullable: false})
   expirationDate: Date;
-
-  @CreateDateColumn()
-  createdAt: Date;
 
   static createUser(login: User['login'], passwordHash: User['passwordHash'], email: User['email']): User {
     const newUser = new User()

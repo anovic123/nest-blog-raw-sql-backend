@@ -34,19 +34,17 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
 
     const createdResult = await this.authRepository.createUser(newUser);
 
-    if (!createdResult) {
-      throw new HttpException(
-        'Error while registering user',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (!createdResult) {
+    //   throw new HttpException(
+    //     'Error while registering user',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     this.emailsManager.sendConfirmationMessage({
       email: newUser.email,
       confirmationCode: newUser.confirmationCode,
-    }).catch(error => {
-      console.error('Failed to send confirmation email:', error);
-    });
+    })
 
     return createdResult;
   }

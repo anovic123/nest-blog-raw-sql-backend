@@ -30,7 +30,7 @@ export class UsersTypeormRepository {
   }
 
   public async deleteUser(id: User['id']): Promise<boolean> {
-    const res = await this.userRepository.delete(id);
+    const res = await this.userRepository.softDelete(id);
     return res.affected !== undefined && res.affected !== null && res.affected > 0;
   }
   
