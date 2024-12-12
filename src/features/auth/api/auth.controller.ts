@@ -119,8 +119,7 @@ export class AuthController {
 
     if (res) {
       response.clearCookie('refreshToken');
-      
-      return res
+      response.sendStatus(HttpStatus.NO_CONTENT);
     }
   }
 
