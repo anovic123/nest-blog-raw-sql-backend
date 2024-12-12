@@ -43,11 +43,9 @@ export class SecurityTypeormRepository {
 
   public async findSessionByDeviceId(deviceId: AuthDevice['device_id']): Promise<AuthDevice | null> {
     const session = await this.authDeviceRepository
-      .createQueryBuilder('s')
-      .where('s.device_id = :device_id', {
-        device_id: deviceId
-      })
-      .getOne()
+      .createQueryBuilder('authDevice')
+      .where('authDevice.device_id = :device_id', { device_id: deviceId })
+      .getOne();
 
     return session || null;
   }
@@ -56,47 +54,43 @@ export class SecurityTypeormRepository {
     userId: User['id'],
     device_id: AuthDevice['device_id']
   ): Promise<boolean> {
+    if (!userId || !device_id) {
+      throw new Error('Invalid userId or device_id');
+    }
+  
     const res = await this.authDeviceRepository
-    .createQueryBuilder('s')
-    .where('s.user_id = :user_id', {
-      user_id: userId
-    })
-    .andWhere('s.device_id = :device_id', {
-      device_id: device_id
-    })
-    .getOne()
-
-    return !!res
-  }
+      .createQueryBuilder('authDevice')
+      .where('authDevice.user_id = :user_id', { user_id: userId })
+      .andWhere('authDevice.device_id = :device_id', { device_id })
+      .getOne();
+  
+    return !!res;
+  }  
 
   public async deleteAllSessions(
     userId: User['id'],
     deviceId: AuthDevice['device_id']
   ): Promise<boolean> {
-    const res = await this.authDeviceRepository
-      .createQueryBuilder('s')
-      .delete()
-      .from(AuthDevice)
-      .where('s.user_id = :userId', { userId })
-      .andWhere('s.device_id != :deviceId', { deviceId })
-      .execute();
+    try {
+      const res = await this.authDeviceRepository
+        .createQueryBuilder()
+        .delete()
+        .from(AuthDevice)
+        .where('user_id = :userId', { userId })
+        .andWhere('device_id != :deviceId', { deviceId })
+        .execute();
   
-    return res.affected !== undefined && res.affected !== null && res.affected > 0;
-  }
+      return res.affected !== undefined && res.affected !== null && res.affected > 0;
+    } catch (error) {
+      console.error(`Error deleting sessions for userId: ${userId}`, error);
+      return false;
+    }
+  }  
   
   public async insertNewUserDevice(data: AuthDevice): Promise<boolean> {
     const newSession = AuthDevice.createUserDevice(data)
 
     const result = await this.authDeviceRepository.save(newSession)
-
-    // const checkDeviceUser = await this.authDeviceRepository
-    //   .createQueryBuilder('s')
-    //   .where('s.user_id = :userId', { userId: result.id })
-    //   .getOne()
-
-    //   if (!checkDeviceUser) {
-    //     throw new Error('Session was not created')
-    //   }
 
     return true;
   }

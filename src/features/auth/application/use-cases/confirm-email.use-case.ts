@@ -25,14 +25,11 @@ export class ConfirmEmailUseCase
     const user = await this.usersQueryRepository.findUserByConfirmationCode(
       command.code,
     );
-
-    if (user?.isConfirmed) {
-      throw new BadRequestException('email is confirmed')
-    }
+    
     if (
       !user ||
       user.confirmationCode !== command.code ||
-      user.expirationDate < new Date()
+      user.expirationDate < new Date() || user?.isConfirmed
     ) {
       throw new BadRequestException('code is wrong');
     }

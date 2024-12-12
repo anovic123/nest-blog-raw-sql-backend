@@ -29,14 +29,17 @@ export class UserTypeormQueryRepository {
 
     queryBuilder.select(['u.id', 'u.login', 'u.email', 'u.createdAt'])
 
-    if (searchEmailTerm) {
-      queryBuilder.andWhere('u.email ILIKE :email', { email: `%${searchEmailTerm}%` })
+    if (searchEmailTerm && searchLoginTerm) {
+      queryBuilder.andWhere(
+        '(u.email ILIKE :email OR u.login ILIKE :login)',
+        { email: `%${searchEmailTerm}%`, login: `%${searchLoginTerm}%` }
+      );
+    } else if (searchEmailTerm) {
+      queryBuilder.andWhere('u.email ILIKE :email', { email: `%${searchEmailTerm}%` });
+    } else if (searchLoginTerm) {
+      queryBuilder.andWhere('u.login ILIKE :login', { login: `%${searchLoginTerm}%` });
     }
-
-    if (searchLoginTerm) {
-      queryBuilder.andWhere('u.login ILIKE :login', { login: `%${searchLoginTerm}%` })
-    }
-
+    
     queryBuilder.orderBy(`u.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
 
     queryBuilder.skip((pageNumber - 1) * pageSize).take(pageSize)

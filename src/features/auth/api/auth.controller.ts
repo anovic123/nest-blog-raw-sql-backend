@@ -119,7 +119,7 @@ export class AuthController {
 
     if (res) {
       response.clearCookie('refreshToken');
-      response.sendStatus(204);
+      response.sendStatus(HttpStatus.NO_CONTENT);
     }
   }
 

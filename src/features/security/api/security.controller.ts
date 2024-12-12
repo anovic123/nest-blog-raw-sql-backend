@@ -34,7 +34,6 @@ export class SecurityController {
   public async getAllDevices(@Req() request: RequestWithUser) {
     return this.securityService.getAllDevicesSessions(
       request.userId!,
-      request.deviceId!,
     );
   }
 

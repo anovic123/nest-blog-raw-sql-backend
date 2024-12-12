@@ -8,14 +8,14 @@ import {
 
 import { RequestWithUser } from '../../base/types/request';
 
-import { SecurityRepository } from '../../features/security/infra/security.repository';
+import { SecurityTypeormRepository } from 'src/features/security/infra/securite-typeorm.repository';
 
 import { JwtService } from '../adapters/jwt-service';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
   constructor(
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityTypeormRepository,
     private readonly jwtService: JwtService,
   ) {}
 
