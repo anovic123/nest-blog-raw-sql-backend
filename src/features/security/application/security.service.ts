@@ -37,7 +37,7 @@ export class SecurityService {
     await this.securityRepository.deleteAllSessions(userId, deviceId);
   }
 
-  public async getAllDevicesSessions(userId: string, deviceId: string) {
+  public async getAllDevicesSessions(userId: string) {
     return this.securityQueryRepository.findSessionsByUserId(userId);
   }
 }

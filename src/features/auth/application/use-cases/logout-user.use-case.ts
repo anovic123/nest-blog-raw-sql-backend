@@ -15,7 +15,7 @@ export class LogoutUserCommand {
 export class LogoutUserUseCase implements ICommandHandler<LogoutUserCommand> {
   constructor(
     private readonly securityRepository: SecurityTypeormRepository,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async execute(command: LogoutUserCommand): Promise<boolean> {
@@ -27,21 +27,28 @@ export class LogoutUserUseCase implements ICommandHandler<LogoutUserCommand> {
       );
 
     if (!decodedToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid or missing token payload.');
     }
 
-    const checkDeviceUser = await this.securityRepository.checkUserDeviceById(
-      decodedToken.userId,
-      decodedToken.deviceId,
+    const isDeviceValid = await this.securityRepository.checkUserDeviceById(
+      decodedToken?.userId,
+      decodedToken?.deviceId,
     );
 
-    if (!checkDeviceUser) {
-      throw new UnauthorizedException();
+    if (!isDeviceValid) {
+      throw new UnauthorizedException(
+        'Device does not match the user or is invalid.',
+      );
     }
 
-    const res = await this.securityRepository.deleteUserDeviceById(
-      decodedToken.deviceId,
+    const isDeleted = await this.securityRepository.deleteUserDeviceById(
+      decodedToken?.deviceId ?? "",
     );
-    return res;
+
+    if (!isDeleted) {
+      throw new Error('Failed to remove user device from repository.');
+    }
+
+    return true;
   }
 }

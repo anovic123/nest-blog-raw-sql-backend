@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { SecurityRepository } from '../../features/security/infra/security.repository';
 import { User } from '../../features/users/domain/users.entity';
 
 export interface JwtPayloadExtended extends JwtPayload {
@@ -26,7 +25,6 @@ export class JwtService {
   private readonly JWT_SECRET: string;
   private readonly EXPIRES_ACCESS_TOKEN: string;
   private readonly EXPIRES_REFRESH_TOKEN: string;
-  private readonly securityRepository: SecurityRepository;
 
   constructor(private readonly configService: ConfigService) {
     this.JWT_SECRET = this.configService.get('jwtSettings.JWT_SECRET', {
