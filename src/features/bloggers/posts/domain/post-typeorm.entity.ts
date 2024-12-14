@@ -1,44 +1,49 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 import { BaseEntity } from "@core/entities/base.entity";
+import { BlogTypeorm } from "../../blogs/domain/blogs-typeorm.entity";
 
 @Entity('posts')
-export class Posts extends BaseEntity {
+export class PostsTypeorm extends BaseEntity {
   @Column({
     type: "varchar",
-    nullable: false
+    nullable: false,
   })
   title: string;
 
   @Column({
     type: "varchar",
     nullable: false,
-    length: 100
+    length: 100,
   })
   shortDescription: string;
 
   @Column({
     type: "varchar",
     nullable: false,
-    length: 1000
+    length: 1000,
   })
   content: string;
 
   @Column({
     type: "varchar",
-    nullable: false
+    nullable: false,
   })
+  
   blogId: string;
+  @ManyToOne(() => BlogTypeorm, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'blogId' })
+  blog: BlogTypeorm;
 
   @Column({
     type: "varchar",
-    nullable: false
+    nullable: false,
   })
   blogName: string;
 
   @CreateDateColumn()
   createdAt: Date;
-  
+
   @Column({ type: "boolean", nullable: false, default: false })
   isMembership: boolean;
 }

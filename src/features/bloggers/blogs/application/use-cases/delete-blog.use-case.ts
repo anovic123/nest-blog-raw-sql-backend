@@ -3,7 +3,7 @@ import { NotFoundException } from "@nestjs/common";
 
 import { BlogViewModel } from "../../api/models/output";
 
-import { BlogsRepository } from "../../infra/blogs.repository";
+import { BlogsTypeormRepository } from "../../infra/blog-typeorm.repository";
 
 export class DeleteBlogCommand {
   constructor (
@@ -13,7 +13,7 @@ export class DeleteBlogCommand {
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
-  constructor(private blogsRepository: BlogsRepository) {}
+  constructor(private blogsRepository: BlogsTypeormRepository) {}
 
   async execute(command: DeleteBlogCommand) {
     const { id } = command;

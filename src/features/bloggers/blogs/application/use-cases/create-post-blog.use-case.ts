@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { BlogPostInputModel } from "../../api/models/input/blog-post.input.model";
 import { BlogPostViewModel, BlogViewModel } from "../../api/models/output";
 
-import { PostsRepository } from "src/features/bloggers/posts/infra/posts.repository";
-import { BlogsQueryRepository } from "../../infra/blogs-query.repository";
+import { BlogsTypeormQueryRepository } from "../../infra/blogs-typeorm-query.repository";
+import { PostsTypeormRepository } from "src/features/bloggers/posts/infra/posts-typeorm.repository";
 
 export class CreatePostBlogCommand {
   constructor(
@@ -18,8 +18,8 @@ export class CreatePostBlogCommand {
 @CommandHandler(CreatePostBlogCommand)
 export class CreatePostBlogUseCase implements ICommandHandler<CreatePostBlogCommand> {
   constructor (
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsQueryRepository: BlogsQueryRepository
+    private readonly postsRepository: PostsTypeormRepository,
+    private readonly blogsQueryRepository: BlogsTypeormQueryRepository
   ) {}
 
   async execute(command: CreatePostBlogCommand): Promise<BlogPostViewModel> {

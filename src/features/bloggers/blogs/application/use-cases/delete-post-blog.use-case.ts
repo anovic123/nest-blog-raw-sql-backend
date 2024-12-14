@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NotFoundException } from "@nestjs/common";
 
-import { PostsRepository } from "src/features/bloggers/posts/infra/posts.repository";
-
 import { BlogPostViewModel, BlogViewModel } from "../../api/models/output";
 
-import { BlogsQueryRepository } from "../../infra/blogs-query.repository";
+import { PostsTypeormRepository } from "src/features/bloggers/posts/infra/posts-typeorm.repository";
+import { BlogsTypeormQueryRepository } from "../../infra/blogs-typeorm-query.repository";
 
 export class DeleteBlogPostCommand {
   constructor (
@@ -17,8 +16,8 @@ export class DeleteBlogPostCommand {
 @CommandHandler(DeleteBlogPostCommand)
 export class DeleteBlogPostUseCase implements ICommandHandler<DeleteBlogPostCommand> {
   constructor (
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsQueryRepository
+    private readonly postsRepository: PostsTypeormRepository,
+    private readonly blogsRepository: BlogsTypeormQueryRepository
   ) {}
 
   async execute(command: DeleteBlogPostCommand) {

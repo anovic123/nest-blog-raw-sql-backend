@@ -41,10 +41,10 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({ status: 200, description: 'Success', type: AccessToken })
-  @ApiResponse({ status: 400, description: 'Validation', type: ErrorResponseDto })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: AccessToken })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Validation', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Log in a user',
     description: 'Logs in a user with their credentials and returns access and refresh tokens.',
@@ -95,7 +95,7 @@ export class AuthController {
 
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .status(200)
+      .status(HttpStatus.OK)
       .json({ accessToken });
   }
 
@@ -103,8 +103,8 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiSecurity('refreshToken')
-  @ApiResponse({ status: 204, description: 'Success' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Success' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiOperation({
     summary: 'Send correct refreshToken that will be revoked',
   })
@@ -125,9 +125,9 @@ export class AuthController {
 
   @Post('/password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiResponse({ status: 204, description: 'Success' })
-  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Success' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Password recovery via Email confirmation',
   })
@@ -138,9 +138,9 @@ export class AuthController {
 
   @Post('/new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiResponse({ status: 204, description: 'Success' })
-  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Success' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Confirm Password recovery',
   })
@@ -150,9 +150,9 @@ export class AuthController {
 
   @Post('/registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiResponse({ status: 204, description: 'Email was verified. Account was activated' })
-  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Email was verified. Account was activated' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Confirm registration',
   })
@@ -162,9 +162,9 @@ export class AuthController {
 
   @Post('/registration')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiResponse({ status: 204, description: 'Email with confirmation code will be send to passed email address' })
-  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Email with confirmation code will be send to passed email address' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Registration in the system',
   })
@@ -174,9 +174,9 @@ export class AuthController {
 
   @Post('/registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiResponse({ status: 204, description: 'Success' })
-  @ApiResponse({ status: 400, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
-  @ApiResponse({ status: 429, description: '5 attempts from one IP-address during 10 seconds' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Success' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'If the inputModel has incorrect value', type: ErrorResponseDto })
+  @ApiResponse({ status: HttpStatus.TOO_MANY_REQUESTS, description: '5 attempts from one IP-address during 10 seconds' })
   @ApiOperation({
     summary: 'Resend confirmation registration email',
   })
@@ -190,8 +190,8 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, description: 'Success' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiOperation({
     summary: 'Get information about current user',
   })

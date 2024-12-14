@@ -4,7 +4,7 @@ import { NotFoundException } from "@nestjs/common";
 import { BlogInputModel } from "../../api/models/input/blog.input.model";
 import { BlogViewModel } from "../../api/models/output";
 
-import { BlogsRepository } from "../../infra/blogs.repository";
+import { BlogsTypeormRepository } from "../../infra/blog-typeorm.repository";
 
 export class UpdateBlogCommand {
   constructor(
@@ -16,7 +16,7 @@ export class UpdateBlogCommand {
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
   constructor(
-    private readonly blogsRepository: BlogsRepository
+    private readonly blogsRepository: BlogsTypeormRepository
   ) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {

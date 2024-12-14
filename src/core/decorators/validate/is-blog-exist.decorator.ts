@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
-import { BlogsRepository } from 'src/features/bloggers/blogs/infra/blogs.repository';
+import { BlogsTypeormRepository } from 'src/features/bloggers/blogs/infra/blog-typeorm.repository';
 
 @ValidatorConstraint({ name: 'BlogIsExist', async: true })
 @Injectable()
 export class BlogIsExistConstraint implements ValidatorConstraintInterface {
-    constructor(private readonly blogRepository: BlogsRepository) { }
+    constructor(private readonly blogRepository: BlogsTypeormRepository) { }
     async validate(value: any, args: ValidationArguments) {
     const blogIsExist = await this.blogRepository.blogIsExist(value);
     return blogIsExist;

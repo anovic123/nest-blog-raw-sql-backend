@@ -6,7 +6,7 @@ import { BasicAuthGuard } from '../../../core/guards/auth-basic.guards';
 
 import { UserOutputModel } from '../../auth/api/models/output/user.output.model';
 import { UserCreateModel } from './models/input/create-user.input.model';
-import { PaginationOutput, PaginationQueryDto, PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagination.base.model';
+import { PaginationOutput, PaginationUsersQueryDto, PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagination.base.model';
 
 import { UserTypeormQueryRepository } from '../infra/users-typeorm-query.repository';
 
@@ -30,7 +30,7 @@ export class UsersController {
 
   @ApiExtraModels(PaginationOutput, UserOutputModel)
   @Get()
-  @ApiQuery({ name: 'Pagination Query', type: PaginationQueryDto  })
+  @ApiQuery({ name: 'Pagination Query', type: PaginationUsersQueryDto  })
   @ApiResponse({
     status: 200,
     schema: {

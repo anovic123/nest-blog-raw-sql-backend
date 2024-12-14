@@ -3,31 +3,33 @@ import { CommandBus } from "@nestjs/cqrs";
 
 import { POSTS_SORTING_PROPERTIES } from "../../blogs/api/blogs-admin.controller";
 
-import { PostsQueryRepository } from "../infra/posts.query.repository";
+import { PostsTypeormQueryRepository } from "../infra/posts-typeorm-query.repository";
 import { CommentsQueryRepository } from "../../comments/infra/comments.query.repository";
 
 import { RequestWithUser } from "src/base/types/request";
-
-import { Pagination } from "src/base/models/pagination.base.model";
 
 import { AuthGuard } from "src/core/guards/auth.guard";
 
 import { CreatePostCommentCommand } from "../application/use-cases/create-post-comment";
 
 import { CommentInputModel } from "../../comments/api/models/input/comment.input.model";
+import { LikePostInputModel } from "./input/like-post.input.model";
+import { Pagination } from "src/base/models/pagination.base.model";
+
+import { CommentViewModel } from "../../comments/api/models/output";
+
+import { LikePostCommand } from "../application/use-cases/like-post.use-case";
+
+import { SortingPropertiesType } from "src/base/types/sorting-properties.type";
 
 import { Public } from "src/core/decorators/public.decorator";
-import { SortingPropertiesType } from "src/base/types/sorting-properties.type";
-import { CommentViewModel } from "../../comments/api/models/output";
-import { LikePostInputModel } from "./input/like-post.input.model";
-import { LikePostCommand } from "../application/use-cases/like-post.use-case";
 
 export const COMMENTS_SORTING_PROPERTIES: SortingPropertiesType<CommentViewModel> = ['id', 'content', 'createdAt']
 
 @Controller('posts')
 export class PostsController {
   constructor (
-    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly postsQueryRepository: PostsTypeormQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}

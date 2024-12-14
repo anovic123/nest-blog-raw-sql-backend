@@ -4,9 +4,8 @@ import { NotFoundException } from "@nestjs/common";
 import { UpdatePostInputModel } from "../../api/models/input/update-post.input.model";
 import { BlogPostViewModel, BlogViewModel } from "../../api/models/output";
 
-import { PostsRepository } from "src/features/bloggers/posts/infra/posts.repository";
-
-import { BlogsQueryRepository } from "../../infra/blogs-query.repository";
+import { BlogsTypeormQueryRepository } from "../../infra/blogs-typeorm-query.repository";
+import { PostsTypeormRepository } from "src/features/bloggers/posts/infra/posts-typeorm.repository";
 
 export class UpdateBlogPostCommand {
   constructor (
@@ -19,8 +18,8 @@ export class UpdateBlogPostCommand {
 @CommandHandler(UpdateBlogPostCommand)
 export class UpdateBlogPostUseCase implements ICommandHandler<UpdateBlogPostCommand> {
   constructor (
-    private readonly blogsRepository: BlogsQueryRepository,
-    private readonly postsRepository: PostsRepository
+    private readonly blogsRepository: BlogsTypeormQueryRepository,
+    private readonly postsRepository: PostsTypeormRepository
   ) {}
 
   async execute(command: UpdateBlogPostCommand) {

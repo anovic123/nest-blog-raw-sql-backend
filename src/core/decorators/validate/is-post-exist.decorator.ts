@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
-import { PostsRepository } from 'src/features/bloggers/posts/infra/posts.repository';
+import { PostsTypeormRepository } from 'src/features/bloggers/posts/infra/posts-typeorm.repository';
 
 @ValidatorConstraint({ name: 'PostIsExist', async: true })
 @Injectable()
 export class PostIsExistConstraint implements ValidatorConstraintInterface {
-    constructor(private readonly postRepository: PostsRepository) { }
+    constructor(private readonly postRepository: PostsTypeormRepository) { }
     async validate(value: any, args: ValidationArguments) {
     const postIsExist = await this.postRepository.isPostExisted(value);
     return postIsExist;
