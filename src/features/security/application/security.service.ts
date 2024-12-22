@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
-import { JwtService } from '../../../core/adapters/jwt-service';
+import { JwtService } from '@core/adapters/jwt-service';
 
 import { SecurityTypeormRepository } from '../infra/securite-typeorm.repository';
 import { SecurityTypeormQueryRepository } from '../infra/securite-typeorm.query.repository';

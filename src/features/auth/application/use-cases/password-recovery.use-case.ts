@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EmailsManager } from '../../../../core/adapters/email.manager';
+import { EmailsManager } from '@core/adapters/email.manager';
 
 import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';

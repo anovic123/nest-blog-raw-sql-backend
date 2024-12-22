@@ -1,11 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { CryptoService } from '../../../../core/adapters/crypto-service';
-import { EmailsManager } from '../../../../core/adapters/email.manager';
-import { User } from '../../../users/domain/users.entity';
-import { UserOutputModel } from '../../api/models/output/user.output.model';
-import { AuthTypeormRepository } from '../../infra/auth-typeorm.repository';
+import { CryptoService } from '@core/adapters/crypto-service';
+import { EmailsManager } from '@core/adapters/email.manager';
+
+import { User } from 'src/features/users/domain/users.entity';
+
+import { UserOutputModel } from 'src/features/auth/api/models/output/user.output.model';
+
+import { AuthTypeormRepository } from 'src/features/auth/infra/auth-typeorm.repository';
 
 class UserInputModel {
   login: string;

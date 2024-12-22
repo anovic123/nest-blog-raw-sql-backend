@@ -34,7 +34,7 @@ import { UsersTypeormRepository } from "../users/infra/users-typeorm.repository"
 import { PostsTypeormQueryRepository } from "./posts/infra/posts-typeorm-query.repository";
 import { PostsTypeormRepository } from "./posts/infra/posts-typeorm.repository";
 import { BlogsTypeormRepository } from "./blogs/infra/blog-typeorm.repository";
-import { UsersModule } from "../users/users.module";
+import { UsersModule } from "src/features/users/users.module";
 
 @Module({
   imports: [

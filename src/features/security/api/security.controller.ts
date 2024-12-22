@@ -15,7 +15,7 @@ import { RefreshTokenGuard } from 'src/core/guards/refresh-token.guard';
 
 import { SecurityService } from '../application/security.service';
 
-import { RequestWithUser } from '../../../base/types/request';
+import { RequestWithUser } from 'src/base/types/request';
 
 @Controller('security')
 export class SecurityController {

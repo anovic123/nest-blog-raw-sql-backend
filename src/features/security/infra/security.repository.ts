@@ -3,7 +3,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 import { AuthDevice, AuthDevicesDB } from '../domain/device.entity';
-import { User } from '../../users/domain/users.entity';
+import { User } from 'src/features/users/domain/users.entity';
 
 @Injectable()
 export class SecurityRepository {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { PaginationOutput, PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagination.base.model';
-import { UserOutputModel } from '../../auth/api/models/output/user.output.model';
+import { PaginationOutput, PaginationWithSearchLoginAndEmailTerm } from 'src/base/models/pagination.base.model';
+import { UserOutputModel } from 'src/features/auth/api/models/output/user.output.model';
 import { User } from '../domain/users.entity';
 
 @Injectable()

@@ -5,7 +5,7 @@ import { SecurityTypeormRepository } from 'src/features/security/infra/securite-
 import {
   JwtRefreshPayloadExtended,
   JwtService,
-} from '../../../../core/adapters/jwt-service';
+} from '@core/adapters/jwt-service';
 
 export class LogoutUserCommand {
   constructor(public readonly requestRefreshToken: string) {}

@@ -91,7 +91,7 @@ export class BlogsTypeormQueryRepository {
 
     const queryBuilder = this.postsRepository.createQueryBuilder('b')
 
-    queryBuilder.select(['b.title', 'b.title', 'b.shortDescription', 'b.content', 'b.blogId', 'b.blogName', 'b.createdAt'])
+    queryBuilder.select(['b.id', 'b.title', 'b.shortDescription', 'b.content', 'b.blogId', 'b.blogName', 'b.createdAt'])
 
     if (searchNameTerm) {
       queryBuilder.andWhere('b.title ILIKE :title', { title: `%${searchNameTerm}%` })

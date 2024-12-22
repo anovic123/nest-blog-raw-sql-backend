@@ -4,7 +4,7 @@ import { ApiBasicAuth, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiT
 
 import { BasicAuthGuard } from "src/core/guards/auth-basic.guards";
 
-import { BlogsTypeormQueryRepository } from "../infra/blogs-typeorm-query.repository";
+import { BlogsTypeormQueryRepository } from "src/features/bloggers/blogs/infra/blogs-typeorm-query.repository";
 
 import { Blog } from "../domain/blogs.entity";
 
@@ -124,7 +124,7 @@ export class BlogsAdminController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "If the inputModel has incorrect values", type: ErrorResponseDto })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
   public async createBlogsPost(
-    @Param('blogId') blogId: BlogPostViewModel['blogId'],
+    @Param('blogId') blogId: string,
     @Body() body: BlogPostInputModel
   ) {
     return this.commandBus.execute(new CreatePostBlogCommand(blogId, body))

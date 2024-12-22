@@ -41,9 +41,6 @@ export class PostsTypeorm extends BaseEntity {
   })
   blogName: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
   @Column({ type: "boolean", nullable: false, default: false })
   isMembership: boolean;
 }

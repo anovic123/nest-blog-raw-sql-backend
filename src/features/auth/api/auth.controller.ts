@@ -4,10 +4,10 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 
-import { AuthGuard } from '../../../core/guards/auth.guard';
-import { RefreshTokenGuard } from '../../../core/guards/refresh-token.guard';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { RefreshTokenGuard } from '@core/guards/refresh-token.guard';
 
-import { UserCreateModel } from '../../users/api/models/input/create-user.input.model';
+import { UserCreateModel } from 'src/features/users/api/models/input/create-user.input.model';
 import { BodyLoginModel } from './models/input/body-login.input.model';
 import { EmailResendingModel } from './models/input/email-resending.input.model';
 import { NewPasswordInputModel } from './models/input/new-password.input.model';
@@ -26,7 +26,7 @@ import { LogoutUserCommand } from '../application/use-cases/logout-user.use-case
 
 import { AuthService } from '../application/auth.service';
 
-import { RequestWithUser } from '../../../base/types/request';
+import { RequestWithUser } from 'src/base/types/request';
 
 import { CreateSessionCommand } from '../application/use-cases/create-session';
 
