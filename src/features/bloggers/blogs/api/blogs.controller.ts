@@ -23,7 +23,7 @@ export class BlogsController {
   @Get()
   @ApiQuery({ name: 'Pagination Query', type: PaginationQueryDto  })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     schema: {
       allOf: [
         { $ref: getSchemaPath(PaginationOutput) },
