@@ -97,18 +97,18 @@ export class PostsTypeormRepository {
 
   public async likePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
-
+    const id = uuidv4()
     if (existingLike) {
       existingLike.status = LikePostStatus.LIKE;
       existingLike.createdAt = new Date();
       await this.likePostsRepository.save(existingLike);
     } else {
       const newLike = this.likePostsRepository.create({
-        id: uuidv4(),
+        id,
         authorId: userId,
         postId,
         status: LikePostStatus.LIKE,
-        createdAt: new Date
+        createdAt: new Date()
       });
 
       await this.likePostsRepository.save(newLike);
@@ -119,6 +119,7 @@ export class PostsTypeormRepository {
 
   public async dislikePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
+    const id = uuidv4()
 
     if (existingLike) {
       existingLike.status = LikePostStatus.DISLIKE;
@@ -126,7 +127,7 @@ export class PostsTypeormRepository {
       await this.likePostsRepository.save(existingLike);
     } else {
       const newLike = this.likePostsRepository.create({
-        id: uuidv4(),
+        id,
         authorId: userId,
         postId,
         status: LikePostStatus.DISLIKE,
@@ -140,14 +141,15 @@ export class PostsTypeormRepository {
 
   public async noneStatusPost(userId: string, postId: string): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
-  
+    const id = uuidv4()
+
     if (existingLike) {
       existingLike.status = LikePostStatus.NONE;
       existingLike.createdAt = new Date();
       await this.likePostsRepository.save(existingLike);
     } else {
       const newLike = this.likePostsRepository.create({
-        id: uuidv4(),
+        id,
         authorId: userId,
         postId,
         status: LikePostStatus.NONE,

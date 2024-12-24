@@ -31,6 +31,7 @@ export class PostsTypeorm extends BaseEntity {
   })
   
   blogId: string;
+  
   @ManyToOne(() => BlogTypeorm, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'blogId' })
   blog: BlogTypeorm;

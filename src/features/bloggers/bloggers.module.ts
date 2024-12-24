@@ -35,12 +35,14 @@ import { PostsTypeormQueryRepository } from "./posts/infra/posts-typeorm-query.r
 import { PostsTypeormRepository } from "./posts/infra/posts-typeorm.repository";
 import { BlogsTypeormRepository } from "./blogs/infra/blog-typeorm.repository";
 import { UsersModule } from "src/features/users/users.module";
+import { CommentsTypeormQueryRepository } from "./comments/infra/comments-typeorm.query.repository";
+import { CommentsTypeormRepository } from "./comments/infra/comments-typeorm.repository";
 
 @Module({
   imports: [
     CqrsModule,
     UsersModule,
-    TypeOrmModule.forFeature([BlogTypeorm, LikePosts, PostsTypeorm, LikeComment])
+    TypeOrmModule.forFeature([BlogTypeorm, LikePosts, PostsTypeorm, Comments, LikeComment])
   ],
   controllers: [ 
     BlogsController, 
@@ -65,8 +67,10 @@ import { UsersModule } from "src/features/users/users.module";
     PostsTypeormRepository,
     BlogsTypeormQueryRepository,
     PostsTypeormQueryRepository,
-    CommentsRepository,
-    CommentsQueryRepository,
+    CommentsTypeormQueryRepository,
+    CommentsTypeormRepository
+    // CommentsRepository,
+    // CommentsQueryRepository,
   ],
   exports: [
     PostsTypeormRepository,

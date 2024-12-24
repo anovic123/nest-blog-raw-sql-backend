@@ -1,8 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, Unique } from "typeorm";
 
 import { LikeCommentStatus } from "../api/models/output";
 
 @Entity('like-comments')
+@Unique(['authorId', 'postId'])
 export class LikeComment {
   @PrimaryColumn('uuid')
   id: string;

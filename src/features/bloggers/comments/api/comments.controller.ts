@@ -7,7 +7,7 @@ import { AuthGuard } from "src/core/guards/auth.guard";
 import { CommentInputModel } from "./models/input/comment.input.model";
 import { LikeStatusInputModel } from "./models/input/likes.input.model";
 
-import { CommentsQueryRepository } from "../infra/comments.query.repository";
+import { CommentsTypeormQueryRepository } from "../infra/comments-typeorm.query.repository";
 
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment.use-case";
 import { UpdateCommentCommand } from "../application/use-cases/update-comment.use-case";
@@ -21,7 +21,7 @@ import { CommentViewModel } from "./models/output";
 @Controller('comments')
 export class CommentsController {
   constructor (
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsQueryRepository: CommentsTypeormQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

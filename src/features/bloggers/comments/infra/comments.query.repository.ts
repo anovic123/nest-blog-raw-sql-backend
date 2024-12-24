@@ -61,7 +61,6 @@ export class CommentsQueryRepository {
     };
     
     return paginationResult;
-    
   }  
 
   public async getPostsCommentsById(

@@ -8,12 +8,15 @@ import { GetBlogPostsHelperResult } from "../../blogs/helper";
 import { LikeCommentStatus } from "../../comments/api/models/output";
 import { LikePostStatus } from "../api/output";
 import { User } from "src/features/users/domain/users.entity";
+import { LikePosts } from "../domain/like-post.entity";
 
 @Injectable()
 export class PostsTypeormQueryRepository {
   constructor (
     @InjectRepository(PostsTypeorm)
-    protected readonly postsRepository: Repository<PostsTypeorm>
+    protected readonly postsRepository: Repository<PostsTypeorm>,
+    @InjectRepository(LikePosts)
+    protected readonly likePosts: Repository<LikePosts>
   ) {}
 
   public async getBlogPosts(
@@ -51,7 +54,7 @@ export class PostsTypeormQueryRepository {
       page: pageNumber,
       pageSize,
       totalCount,
-      items: posts.map((p: BlogPostViewModel) => this.mapPostOutput(p, userId))
+      items: posts.length > 0 ? await Promise.all(posts.map((p: PostsTypeorm) => this.mapPostOutput(p, userId))) : []
     }
 
     return paginationResult;
@@ -75,7 +78,31 @@ export class PostsTypeormQueryRepository {
   }
   
 
-  public mapPostOutput(post: BlogPostViewModel, userId?: string | null): BlogPostOutputModel {
+  public async mapPostOutput(post: BlogPostViewModel, userId?: string | null): Promise<BlogPostOutputModel> {
+    const likes = await this.likePosts
+      .createQueryBuilder("lp")
+      .select([
+        "lp.*",
+        `(SELECT "users"."login" FROM "users" WHERE "users"."id" = lp."authorId") AS "login"`
+      ])
+      .where("lp.postId = :postId", { postId: post.id })
+      .orderBy("lp.createdAt", "DESC")
+      .getRawMany();
+
+    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null;
+    const likesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).length;
+    const dislikesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.DISLIKE).length;
+    const myStatus = userLike?.status ?? LikePostStatus.NONE;
+
+    const newestLikes = likes
+      .filter((l: LikePosts) => l.status === LikePostStatus.LIKE)
+      .slice(0, 3)
+      .map(l => ({
+        addedAt: l.createdAt.toISOString(),
+        userId: l.authorId,
+        login: l.login
+    }));
+
     const postForOutput = {
       id: post.id,
       title: post.title,
@@ -85,10 +112,10 @@ export class PostsTypeormQueryRepository {
       blogName: post.blogName,
       createdAt: post.createdAt,
       extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikePostStatus.NONE,
-        newestLikes: []
+        likesCount,
+        dislikesCount,
+        myStatus,
+        newestLikes
       }
     };
   

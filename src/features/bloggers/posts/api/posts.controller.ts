@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, getSchemaPath } fro
 import { POSTS_SORTING_PROPERTIES } from "../../blogs/api/blogs-admin.controller";
 
 import { PostsTypeormQueryRepository } from "../infra/posts-typeorm-query.repository";
-import { CommentsQueryRepository } from "../../comments/infra/comments.query.repository";
+import { CommentsTypeormQueryRepository } from "../../comments/infra/comments-typeorm.query.repository";
 
 import { RequestWithUser } from "src/base/types/request";
 
@@ -33,7 +33,7 @@ export const COMMENTS_SORTING_PROPERTIES: SortingPropertiesType<CommentViewModel
 export class PostsController {
   constructor (
     private readonly postsQueryRepository: PostsTypeormQueryRepository,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsQueryRepository: CommentsTypeormQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
