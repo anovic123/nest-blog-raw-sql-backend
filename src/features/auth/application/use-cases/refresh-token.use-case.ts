@@ -5,7 +5,8 @@ import { SecurityTypeormRepository } from 'src/features/security/infra/securite-
 import {
   JwtRefreshPayloadExtended,
   JwtService,
-} from 'src/core/adapters/jwt-service';
+} from '@core/adapters/jwt-service';
+
 import { UnauthorizedException } from '@nestjs/common';
 
 export class RefreshTokenCommand {

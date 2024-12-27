@@ -2,12 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EmailResendingModel } from '../../api/models/input/email-resending.input.model';
+import { EmailResendingModel } from 'src/features/auth/api/models/input/email-resending.input.model';
 
 import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
-import { EmailsManager } from '../../../../core/adapters/email.manager';
+import { EmailsManager } from '@core/adapters/email.manager';
 
 export class ResendCodeCommand {
   constructor(public readonly emailModel: EmailResendingModel) {}

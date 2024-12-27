@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { CryptoService } from '../../../core/adapters/crypto-service';
+import { CryptoService } from '@core/adapters/crypto-service';
 
-import { User } from '../../users/domain/users.entity';
+import { User } from 'src/features/users/domain/users.entity';
 
 import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 

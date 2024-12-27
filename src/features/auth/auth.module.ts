@@ -7,12 +7,11 @@ import { AuthController } from './api/auth.controller';
 
 import { AuthService } from './application/auth.service';
 
-import { User } from '../users/domain/users.entity';
+import { User } from 'src/features/users/domain/users.entity';
 
-import { UsersSqlQueryRepository } from '../users/infra/users-sql-query.repository';
-import { UsersRepository } from '../users/infra/users.repository';
-import { UserTypeormQueryRepository } from '../users/infra/users-typeorm-query.repository';
-import { UsersTypeormRepository } from '../users/infra/users-typeorm.repository';
+import { UsersSqlQueryRepository } from 'src/features/users/infra/users-sql-query.repository';
+import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
+import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 import { AuthTypeormRepository } from './infra/auth-typeorm.repository';
 
 import {
@@ -57,7 +56,7 @@ import { CreateUserUseCase } from './application/use-cases/create-users.use-case
     UserTypeormQueryRepository,
     EmailIsExistConstraint,
     LoginIsExistConstraint,
-    UsersRepository,
+    UsersTypeormRepository,
   ],
   controllers: [AuthController],
   exports: [AuthService]

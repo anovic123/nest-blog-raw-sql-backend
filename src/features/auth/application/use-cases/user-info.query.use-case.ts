@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { UserInfoOutputModel } from '../../api/models/output/user-info.output.model';
+import { UserInfoOutputModel } from 'src/features/auth/api/models/output/user-info.output.model';
 
 import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 

@@ -4,11 +4,11 @@ import { UnauthorizedException } from '@nestjs/common';
 
 import {
   JwtService,
-} from '../../../../core/adapters/jwt-service';
+} from '@core/adapters/jwt-service';
 
 import { SecurityTypeormRepository } from 'src/features/security/infra/securite-typeorm.repository';
 
-import { User } from '../../../users/domain/users.entity';
+import { User } from 'src/features/users/domain/users.entity';
 
 export class CreateSessionCommand {
   constructor(

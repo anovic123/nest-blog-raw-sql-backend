@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { User } from '../../users/domain/users.entity';
+import { User } from 'src/features/users/domain/users.entity';
 import { AuthDevice } from '../domain/device.entity';
 
 import { DevicesSessionViewModel } from '../api/models/output.model';

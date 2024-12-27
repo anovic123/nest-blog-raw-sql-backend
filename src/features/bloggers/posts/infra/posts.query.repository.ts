@@ -66,7 +66,6 @@ export class PostsQueryRepository {
     return paginationResult;
   }
   
-
   public async getPostsById(id: BlogPostViewModel['id'], userId?: User['id']): Promise<BlogPostOutputModel | null> {
     const query = `
       SELECT * FROM "posts" WHERE "id" = $1

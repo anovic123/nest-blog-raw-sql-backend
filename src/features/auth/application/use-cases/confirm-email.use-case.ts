@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException } from '@nestjs/common';
 
-import { CodeInputModel } from '../../api/models/input/code.input.model';
+import { CodeInputModel } from 'src/features/auth/api/models/input/code.input.model';
 
-import { UsersSqlQueryRepository } from '../../../users/infra/users-sql-query.repository';
 import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
 import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 

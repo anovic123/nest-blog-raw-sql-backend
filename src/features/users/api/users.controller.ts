@@ -2,17 +2,17 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiBasicAuth, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
-import { BasicAuthGuard } from '../../../core/guards/auth-basic.guards';
+import { BasicAuthGuard } from '@core/guards/auth-basic.guards';
 
-import { UserOutputModel } from '../../auth/api/models/output/user.output.model';
+import { UserOutputModel } from 'src/features/auth/api/models/output/user.output.model';
 import { UserCreateModel } from './models/input/create-user.input.model';
-import { PaginationOutput, PaginationQueryDto, PaginationWithSearchLoginAndEmailTerm } from '../../../base/models/pagination.base.model';
+import { PaginationOutput, PaginationUsersQueryDto, PaginationWithSearchLoginAndEmailTerm } from 'src/base/models/pagination.base.model';
 
 import { UserTypeormQueryRepository } from '../infra/users-typeorm-query.repository';
 
-import { CreateUserCommand } from '../../auth/application/use-cases/create-users.use-case';
+import { CreateUserCommand } from 'src/features/auth/application/use-cases/create-users.use-case';
 
-import { SortingPropertiesType } from '../../../base/types/sorting-properties.type';
+import { SortingPropertiesType } from 'src/base/types/sorting-properties.type';
 import { DeleteUserCommand } from '../application/use-cases/delete-users.use-case';
 
 export const USERS_SORTING_PROPERTIES: SortingPropertiesType<UserOutputModel> =
@@ -30,7 +30,7 @@ export class UsersController {
 
   @ApiExtraModels(PaginationOutput, UserOutputModel)
   @Get()
-  @ApiQuery({ name: 'Pagination Query', type: PaginationQueryDto  })
+  @ApiQuery({ name: 'Pagination Query', type: PaginationUsersQueryDto  })
   @ApiResponse({
     status: 200,
     schema: {

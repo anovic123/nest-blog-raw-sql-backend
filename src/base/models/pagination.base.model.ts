@@ -12,7 +12,7 @@ export class PaginationOutput<D> {
   @ApiProperty({ description: 'Number of items per page', example: 10 })
   public readonly pageSize?: number;
 
-  @ApiProperty({ description: 'Total number of items', example: 100 })
+  @ApiProperty({ description: 'Total number of items', example: 10 })
   public readonly totalCount?: number;
 
   @ApiProperty({ isArray: true, description: 'List of items', type: Object })
@@ -172,6 +172,9 @@ export class PaginationQueryDto {
   @IsString()
   searchNameTerm?: string | null;
 
+}
+
+export class PaginationUsersQueryDto extends PaginationQueryDto {
   @ApiProperty({
     description: 'Search term for login',
     example: '',

@@ -3,8 +3,8 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
 
-import { PostsRepository } from "../../infra/posts.repository";
-import { UsersRepository } from "src/features/users/infra/users.repository";
+import { UsersTypeormRepository } from "src/features/users/infra/users-typeorm.repository";
+import { PostsTypeormRepository } from "../../infra/posts-typeorm.repository";
 
 import { CommentInputModel } from "src/features/bloggers/comments/api/models/input/comment.input.model";
 import { Comments } from "src/features/bloggers/comments/domain/comments.entity";
@@ -20,9 +20,9 @@ export class CreatePostCommentCommand {
 @CommandHandler(CreatePostCommentCommand)
 export class CreatePostCommentUseCase implements ICommandHandler<CreatePostCommentCommand> {
   constructor (
-    private readonly postsRepository: PostsRepository,
+    private readonly postsRepository: PostsTypeormRepository,
     private readonly commentsRepository: CommentsRepository,
-    private readonly usersRepository: UsersRepository
+    private readonly usersRepository: UsersTypeormRepository
   ) {}
 
   async execute(command: CreatePostCommentCommand) {

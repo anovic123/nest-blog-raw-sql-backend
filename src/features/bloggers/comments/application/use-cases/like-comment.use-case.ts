@@ -5,10 +5,10 @@ import { User } from "src/features/users/domain/users.entity";
 import { Comments } from "../../domain/comments.entity";
 import { Posts } from "src/features/bloggers/posts/domain/posts.entity";
 
-import { UsersRepository } from "src/features/users/infra/users.repository";
 import { CommentsRepository } from "../../infra/comments.repository";
 
 import { LikeCommentStatus } from "../../api/models/output";
+import { UsersTypeormRepository } from "src/features/users/infra/users-typeorm.repository";
 
 export class LikeCommentCommand {
   constructor (
@@ -23,7 +23,7 @@ export class LikeCommentCommand {
 @CommandHandler(LikeCommentCommand)
 export class LikeCommentUseCase implements ICommandHandler<LikeCommentCommand> {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersTypeormRepository,
     private readonly commentsRepository: CommentsRepository
   ) {}
 

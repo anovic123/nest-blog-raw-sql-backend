@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { NewPasswordInputModel } from '../../api/models/input/new-password.input.model';
+import { NewPasswordInputModel } from 'src/features/auth/api/models/input/new-password.input.model';
+
+import { CryptoService } from '@core/adapters/crypto-service';
 
 import { UsersTypeormRepository } from 'src/features/users/infra/users-typeorm.repository';
-
-import { CryptoService } from '../../../../core/adapters/crypto-service';
 import { UserTypeormQueryRepository } from 'src/features/users/infra/users-typeorm-query.repository';
 
 export class NewPasswordCommand {
