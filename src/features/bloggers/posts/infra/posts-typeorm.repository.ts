@@ -97,19 +97,16 @@ export class PostsTypeormRepository {
 
   public async likePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
-    const id = uuidv4()
     if (existingLike) {
       existingLike.status = LikePostStatus.LIKE;
       existingLike.createdAt = new Date();
       await this.likePostsRepository.save(existingLike);
     } else {
-      const newLike = this.likePostsRepository.create({
-        id,
+      const newLike = LikePosts.createPostLike({
         authorId: userId,
         postId,
-        status: LikePostStatus.LIKE,
-        createdAt: new Date()
-      });
+        status: LikePostStatus.LIKE
+      })
 
       await this.likePostsRepository.save(newLike);
     }
@@ -119,20 +116,17 @@ export class PostsTypeormRepository {
 
   public async dislikePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
-    const id = uuidv4()
-
     if (existingLike) {
       existingLike.status = LikePostStatus.DISLIKE;
       existingLike.createdAt = new Date();
       await this.likePostsRepository.save(existingLike);
     } else {
-      const newLike = this.likePostsRepository.create({
-        id,
+      const newLike = LikePosts.createPostLike({
         authorId: userId,
         postId,
-        status: LikePostStatus.DISLIKE,
-        createdAt: new Date(),
-      });
+        status: LikePostStatus.DISLIKE
+      })
+
       await this.likePostsRepository.save(newLike);
     }
   
@@ -141,20 +135,17 @@ export class PostsTypeormRepository {
 
   public async noneStatusPost(userId: string, postId: string): Promise<boolean> {
     const existingLike = await this.findLikePostById(userId, postId)
-    const id = uuidv4()
-
     if (existingLike) {
       existingLike.status = LikePostStatus.NONE;
       existingLike.createdAt = new Date();
       await this.likePostsRepository.save(existingLike);
     } else {
-      const newLike = this.likePostsRepository.create({
-        id,
+      const newLike = LikePosts.createPostLike({
         authorId: userId,
         postId,
-        status: LikePostStatus.NONE,
-        createdAt: new Date(),
-      });
+        status: LikePostStatus.NONE
+      })
+
       await this.likePostsRepository.save(newLike);
     }
   

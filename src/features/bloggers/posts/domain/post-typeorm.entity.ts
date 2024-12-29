@@ -26,7 +26,7 @@ export class PostsTypeorm extends BaseEntity {
   content: string;
 
   @Column({
-    type: "varchar",
+    type: "uuid",
     nullable: false,
   })
   

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { PostsTypeorm } from "../domain/post-typeorm.entity";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { PaginatedResponse } from "src/base/types/pagination";
 import { BlogPostOutputModel, BlogPostViewModel } from "../../blogs/api/models/output";
 import { GetBlogPostsHelperResult } from "../../blogs/helper";
@@ -16,7 +16,9 @@ export class PostsTypeormQueryRepository {
     @InjectRepository(PostsTypeorm)
     protected readonly postsRepository: Repository<PostsTypeorm>,
     @InjectRepository(LikePosts)
-    protected readonly likePosts: Repository<LikePosts>
+    protected readonly likePosts: Repository<LikePosts>,
+    @InjectDataSource()
+    protected readonly dataSource: DataSource
   ) {}
 
   public async getBlogPosts(
@@ -74,43 +76,41 @@ export class PostsTypeormQueryRepository {
       .where('p.id = :id', { id })
       .getOne();
   
-    return queryBuilder ? this.mapPostOutput(queryBuilder, userId) : null;
+    return queryBuilder ? await this.mapPostOutput(queryBuilder, userId) : null;
   }
-  
 
   public async mapPostOutput(post: BlogPostViewModel, userId?: string | null): Promise<BlogPostOutputModel> {
     const likes = await this.likePosts
-      .createQueryBuilder("lp")
-      .select([
-        "lp.*",
-        `(SELECT "users"."login" FROM "users" WHERE "users"."id" = lp."authorId") AS "login"`
-      ])
-      .where("lp.postId = :postId", { postId: post.id })
-      .orderBy("lp.createdAt", "DESC")
-      .getRawMany();
+    .createQueryBuilder("lp")
+    .select([
+      "lp.*",
+      `(SELECT "users"."login" FROM "users" WHERE "users"."id" = lp."authorId") AS "login"`
+    ])
+    .where("lp.postId = :postId", { postId: post.id })
+    .orderBy("lp.createdAt", "DESC")
+    .getRawMany();
 
-    const userLike = userId ? likes.find((l: LikePosts) => l.authorId === userId) : null;
-    const likesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.LIKE).length;
-    const dislikesCount = likes.filter((l: LikePosts) => l.status === LikePostStatus.DISLIKE).length;
+    const userLike = userId ? likes?.find((l: LikePosts) => l?.authorId === userId) : null;
+    const likesCount = likes?.filter((l: LikePosts) => l?.status === LikePostStatus.LIKE).length;
+    const dislikesCount = likes?.filter((l: LikePosts) => l?.status === LikePostStatus.DISLIKE).length;
     const myStatus = userLike?.status ?? LikePostStatus.NONE;
 
-    const newestLikes = likes
-      .filter((l: LikePosts) => l.status === LikePostStatus.LIKE)
+    const newestLikes = likes?.filter((l: LikePosts) => l?.status === LikePostStatus.LIKE)
       .slice(0, 3)
       .map(l => ({
-        addedAt: l.createdAt.toISOString(),
-        userId: l.authorId,
-        login: l.login
+        addedAt: l?.createdAt.toISOString(),
+        userId: l?.authorId,
+        login: l?.login
     }));
 
     const postForOutput = {
-      id: post.id,
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt,
+      id: post?.id,
+      title: post?.title,
+      shortDescription: post?.shortDescription,
+      content: post?.content,
+      blogId: post?.blogId,
+      blogName: post?.blogName,
+      createdAt: post?.createdAt,
       extendedLikesInfo: {
         likesCount,
         dislikesCount,

@@ -42,7 +42,7 @@ export class CreatePostCommentUseCase implements ICommandHandler<CreatePostComme
         return new UnauthorizedException()
       }
 
-      const newComment: Comments = {
+      const newComment: any = {
         id: uuidv4(),
         content: content.content,
         createdAt: new Date,

@@ -92,9 +92,9 @@ export class BlogsController {
     summary: 'Returns all posts for specified blog',
   })
   @ApiQuery({ name: 'Pagination Query', type: PaginationQueryDto  })
-  public async getBlogPostsById(@Param('blogId') blogId,
+  public async getBlogPostsById(@Param('blogId') blogId: string,
   @Query() query,
-  @Req() request: RequestWithUser,) {
+  @Req() request: RequestWithUser) {
     const user = request['user']
 
     const pagination = new Pagination(

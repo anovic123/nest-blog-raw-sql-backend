@@ -25,7 +25,7 @@ export class Posts extends BaseEntity {
   content: string;
 
   @Column({
-    type: "varchar",
+    type: "uuid",
     nullable: false
   })
   blogId: string;

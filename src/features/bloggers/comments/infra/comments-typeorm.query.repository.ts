@@ -83,13 +83,15 @@ export class CommentsTypeormQueryRepository {
     includePostId: boolean = false,
     userId?: string | null
   ): Promise<CommentViewModel> {
-    const likesRes = await this.likeCommentsRepository.createQueryBuilder('l').select(["l.*", 
-      `(SELECT "users"."login" FROM "users"."id" = l."authorId") as "login"`
+    const likesRes = await this.likeCommentsRepository.createQueryBuilder('l')
+    .select([
+      "l.*",
+      `(SELECT "users"."login" FROM "users" WHERE "users"."id" = l."authorId") AS "login"`
     ])
-    .where("l.commentId = :commentId", {
-      commentId: comment?.id
-    }).orderBy("l.createdAt", "DESC").getRawMany();
-
+    .where("l.commentId = :commentId", { commentId: comment?.id })
+    .orderBy("l.createdAt", "DESC")
+    .getRawMany();
+        
     const userLike = userId ? likesRes?.find((l: LikeComment) => l.authorId === userId) : null;
     const likesCount = likesRes?.filter((l: LikeComment) => l.status === LikeCommentStatus.LIKE).length ?? 0;
     const dislikesCount = likesRes?.filter((l: LikeComment) => l.status === LikeCommentStatus.DISLIKE).length ?? 0;

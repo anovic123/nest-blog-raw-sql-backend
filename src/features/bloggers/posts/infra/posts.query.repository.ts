@@ -102,7 +102,7 @@ export class PostsQueryRepository {
       .filter((l: LikePosts) => l.status === LikePostStatus.LIKE)
       .slice(0, 3)
       .map(l => ({
-        addedAt: l.createdAt.toISOString(),  // Ensuring addedAt is a string
+        addedAt: l.createdAt.toISOString(), 
         userId: l.authorId,
         login: l.login
       }));

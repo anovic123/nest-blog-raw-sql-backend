@@ -119,6 +119,7 @@ export class PostsController {
   }
 
   @Public()
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/:id')
   @ApiOperation({

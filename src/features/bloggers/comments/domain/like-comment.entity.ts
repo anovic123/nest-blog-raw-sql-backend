@@ -9,7 +9,7 @@ export class LikeComment {
   id: string;
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   authorId: string;
@@ -21,13 +21,13 @@ export class LikeComment {
   status: LikeCommentStatus
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   postId: string;
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   commentId: string;
