@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
@@ -76,59 +76,40 @@ export class CommentsTypeormRepository {
     return commentsRes;
   }
 
-  public async likeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']) : Promise<boolean> {
-    const existingLike = await this.findLikeCommentById(userId, commentId, postId)
-
-    if (existingLike) {
-      existingLike.status = LikeCommentStatus.LIKE;
-      existingLike.createdAt = new Date();
-
-      await this.likeCommentRepository.save(existingLike);
-    } else {
-      const newLike = this.likeCommentRepository.create({
-        id: uuidv4(),
-        authorId: userId,
-        commentId,
-        postId,
-        status: LikeCommentStatus.LIKE,
-        createdAt: new Date()
-      })
-
-      await this.likeCommentRepository.save(newLike);
+  public async likeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']): Promise<boolean> {
+    try {
+      return await this.updateLikeStatus(userId, postId, commentId, LikeCommentStatus.LIKE);
+    } catch (error) {
+      throw new HttpException('Failed to like comment', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return true;
   }
   
   public async dislikeComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']): Promise<boolean> {
-    const existingLike = await this.findLikeCommentById(userId, commentId, postId);
-
-    if (existingLike) {
-      existingLike.status = LikeCommentStatus.DISLIKE;
-      existingLike.createdAt = new Date();
-
-      await this.likeCommentRepository.save(existingLike);
-    } else {
-      const newLike = this.likeCommentRepository.create({
-        id: uuidv4(),
-        authorId: userId,
-        commentId,
-        postId,
-        status: LikeCommentStatus.DISLIKE,
-        createdAt: new Date()
-      })
-
-      await this.likeCommentRepository.save(newLike);
+    try {
+      return await this.updateLikeStatus(userId, postId, commentId, LikeCommentStatus.DISLIKE);
+    } catch (error) {
+      throw new HttpException('Failed to dislike comment', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return true
   }
-   
+  
   public async noneStatusComments(userId: User['id'], postId: Posts['id'], commentId: Comments['id']): Promise<boolean> {
+    try {
+      return await this.updateLikeStatus(userId, postId, commentId, LikeCommentStatus.NONE);
+    } catch (error) {
+      throw new HttpException('Failed to set comment status to none', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
+  private async updateLikeStatus(
+    userId: User['id'],
+    postId: Posts['id'],
+    commentId: Comments['id'],
+    status: LikeCommentStatus
+  ): Promise<boolean> {
     const existingLike = await this.findLikeCommentById(userId, commentId, postId);
-
+  
     if (existingLike) {
-      existingLike.status = LikeCommentStatus.NONE;
+      existingLike.status = status;
       existingLike.createdAt = new Date();
       await this.likeCommentRepository.save(existingLike);
     } else {
@@ -137,13 +118,12 @@ export class CommentsTypeormRepository {
         authorId: userId,
         commentId,
         postId,
-        status: LikeCommentStatus.NONE,
-        createdAt: new Date()
-      })
-
+        status,
+        createdAt: new Date(),
+      });
       await this.likeCommentRepository.save(newLike);
     }
-
+  
     return true;
   }
 
