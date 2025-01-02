@@ -1,9 +1,10 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity } from "@core/entities/base.entity";
 
 @Entity('comments')
-export class Comments {
-  @PrimaryColumn('uuid')
-  id: string;
+export class Comments  extends BaseEntity {
+  // @PrimaryColumn('varchar')
+  // id: string;
 
   @Column({
     type: "varchar",
@@ -13,8 +14,8 @@ export class Comments {
   content: string;
 
   @Column({
-    type: 'varchar',
-    nullable: false
+    type: 'uuid',
+    nullable: true
   })
   userId: string;
 
@@ -24,12 +25,12 @@ export class Comments {
   })
   userLogin: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  // @CreateDateColumn()
+  // createdAt: Date;
 
   @Column({
-    type: 'varchar',
-    nullable: false
+    type: 'uuid',
+    nullable: true
   })
   postId: string;
 }

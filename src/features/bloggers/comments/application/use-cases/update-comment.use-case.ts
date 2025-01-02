@@ -2,8 +2,8 @@ import { User } from "src/features/users/domain/users.entity";
 import { CommentInputModel } from "../../api/models/input/comment.input.model";
 import { Comments } from "../../domain/comments.entity";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CommentsRepository } from "../../infra/comments.repository";
 import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
+import { CommentsTypeormRepository } from "../../infra/comments-typeorm.repository";
 
 
 export class UpdateCommentCommand {
@@ -16,7 +16,7 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentUseCase implements ICommandHandler<UpdateCommentCommand> {
-  constructor (private readonly commentsRepository: CommentsRepository) {}
+  constructor (private readonly commentsRepository: CommentsTypeormRepository) {}
 
   async execute(command: UpdateCommentCommand) {
       const { commentId, body, userId } = command

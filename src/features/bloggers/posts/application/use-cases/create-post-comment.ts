@@ -5,9 +5,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { UsersTypeormRepository } from "src/features/users/infra/users-typeorm.repository";
 import { PostsTypeormRepository } from "../../infra/posts-typeorm.repository";
+import { CommentsTypeormRepository } from "src/features/bloggers/comments/infra/comments-typeorm.repository";
+
+import { Comments } from "src/features/bloggers/comments/domain/comments.entity";
 
 import { CommentInputModel } from "src/features/bloggers/comments/api/models/input/comment.input.model";
-import { Comments } from "src/features/bloggers/comments/domain/comments.entity";
 
 export class CreatePostCommentCommand {
   constructor (
@@ -21,7 +23,7 @@ export class CreatePostCommentCommand {
 export class CreatePostCommentUseCase implements ICommandHandler<CreatePostCommentCommand> {
   constructor (
     private readonly postsRepository: PostsTypeormRepository,
-    private readonly commentsRepository: CommentsRepository,
+    private readonly commentsRepository: CommentsTypeormRepository,
     private readonly usersRepository: UsersTypeormRepository
   ) {}
 
@@ -40,7 +42,7 @@ export class CreatePostCommentUseCase implements ICommandHandler<CreatePostComme
         return new UnauthorizedException()
       }
 
-      const newComment: Comments = {
+      const newComment: any = {
         id: uuidv4(),
         content: content.content,
         createdAt: new Date,

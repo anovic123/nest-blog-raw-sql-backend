@@ -26,11 +26,12 @@ export class PostsTypeorm extends BaseEntity {
   content: string;
 
   @Column({
-    type: "varchar",
+    type: "uuid",
     nullable: false,
   })
   
   blogId: string;
+  
   @ManyToOne(() => BlogTypeorm, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'blogId' })
   blog: BlogTypeorm;

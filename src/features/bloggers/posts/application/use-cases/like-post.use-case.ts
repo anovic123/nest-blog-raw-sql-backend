@@ -41,18 +41,18 @@ export class LikePostUseCase implements ICommandHandler<LikePostCommand> {
         return
       }
 
-      // switch (bodyLikesStatus) {
-      //   case LikePostStatus.NONE:
-      //     await this.postsRepository.noneStatusPost(userId, postId)
-      //     break;
-      //   case LikePostStatus.LIKE:
-      //     await this.postsRepository.likePost(userId, postId)
-      //     break;
-      //   case LikePostStatus.DISLIKE:
-      //     await this.postsRepository.dislikePost(userId, postId)
-      //     break
-      //   default:
-      //     return;
-      // }
+      switch (bodyLikesStatus) {
+        case LikePostStatus.NONE:
+          await this.postsRepository.noneStatusPost(userId, postId)
+          break;
+        case LikePostStatus.LIKE:
+          await this.postsRepository.likePost(userId, postId)
+          break;
+        case LikePostStatus.DISLIKE:
+          await this.postsRepository.dislikePost(userId, postId)
+          break
+        default:
+          return;
+      }
   }
 }

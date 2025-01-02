@@ -1,11 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { v4 as uuidv4 } from "uuid";
 
 import { PostsTypeorm } from "../domain/post-typeorm.entity";
+import { User } from "src/features/users/domain/users.entity";
+import { LikePosts } from "../domain/like-post.entity";
 
 import { BlogPostViewModel, BlogViewModel } from "../../blogs/api/models/output";
-import { LikePostStatus } from "../api/output";
+import { LikePostStatus, PostViewModel } from "../api/output";
 
 import { UpdatePostInputModel } from "../../blogs/api/models/input/update-post.input.model";
 
@@ -13,7 +16,9 @@ import { UpdatePostInputModel } from "../../blogs/api/models/input/update-post.i
 export class PostsTypeormRepository {
   constructor(
     @InjectRepository(PostsTypeorm)
-    protected readonly postsRepository: Repository<PostsTypeorm>
+    protected readonly postsRepository: Repository<PostsTypeorm>,
+    @InjectRepository(LikePosts)
+    protected readonly likePostsRepository: Repository<LikePosts>
   ) {}
 
   public async isPostExisted(id: BlogPostViewModel['id']): Promise<boolean> {
@@ -78,4 +83,73 @@ export class PostsTypeormRepository {
 
     return newPostResult
   }
+
+  public async findLikePostById (userId: User['id'], postId: PostsTypeorm['id']): Promise<LikePosts | null> {
+    const postRes = await this.likePostsRepository.findOne({
+      where: {
+        authorId: userId,
+        postId
+      }
+    })
+
+    return postRes
+  }
+
+  public async likePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
+    const existingLike = await this.findLikePostById(userId, postId)
+    if (existingLike) {
+      existingLike.status = LikePostStatus.LIKE;
+      existingLike.createdAt = new Date();
+      await this.likePostsRepository.save(existingLike);
+    } else {
+      const newLike = LikePosts.createPostLike({
+        authorId: userId,
+        postId,
+        status: LikePostStatus.LIKE
+      })
+
+      await this.likePostsRepository.save(newLike);
+    }
+
+    return true;
+  }
+
+  public async dislikePost(userId: User['id'], postId: PostViewModel['id']): Promise<boolean> {
+    const existingLike = await this.findLikePostById(userId, postId)
+    if (existingLike) {
+      existingLike.status = LikePostStatus.DISLIKE;
+      existingLike.createdAt = new Date();
+      await this.likePostsRepository.save(existingLike);
+    } else {
+      const newLike = LikePosts.createPostLike({
+        authorId: userId,
+        postId,
+        status: LikePostStatus.DISLIKE
+      })
+
+      await this.likePostsRepository.save(newLike);
+    }
+  
+    return true;
+  }
+
+  public async noneStatusPost(userId: string, postId: string): Promise<boolean> {
+    const existingLike = await this.findLikePostById(userId, postId)
+    if (existingLike) {
+      existingLike.status = LikePostStatus.NONE;
+      existingLike.createdAt = new Date();
+      await this.likePostsRepository.save(existingLike);
+    } else {
+      const newLike = LikePosts.createPostLike({
+        authorId: userId,
+        postId,
+        status: LikePostStatus.NONE
+      })
+
+      await this.likePostsRepository.save(newLike);
+    }
+  
+    return true;
+  }
+  
 }

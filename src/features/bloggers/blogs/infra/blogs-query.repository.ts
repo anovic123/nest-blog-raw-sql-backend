@@ -2,15 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
-import { getAllBlogsHelper, GetAllBlogsHelperResult, GetBlogPostsHelperResult } from "../helper";
-
-import { Blog } from "../domain/blogs.entity";
-
 import { PaginatedResponse } from "src/base/types/pagination";
 
 import { BlogPostOutputModel, BlogPostViewModel, BlogViewModel, LikePostStatus } from "../api/models/output";
 
-import { Pagination, PaginationType } from "src/base/models/pagination.base.model";
+import { PaginationType } from "src/base/models/pagination.base.model";
 import { LikePosts } from "../../posts/domain/like-post.entity";
 
 @Injectable()

@@ -4,7 +4,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { User } from "src/features/users/domain/users.entity";
 import { Comments } from "../../domain/comments.entity";
 
-import { CommentsRepository } from "../../infra/comments.repository";
+import { CommentsTypeormRepository } from "../../infra/comments-typeorm.repository";
 
 export class DeleteCommentCommand {
   constructor(
@@ -16,7 +16,7 @@ export class DeleteCommentCommand {
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentCommand> {
   constructor (
-    private readonly commentsRepository: CommentsRepository
+    private readonly commentsRepository: CommentsTypeormRepository
   ) {}
 
   async execute(command: DeleteCommentCommand){

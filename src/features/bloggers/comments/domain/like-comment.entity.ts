@@ -1,14 +1,15 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, Unique } from "typeorm";
 
 import { LikeCommentStatus } from "../api/models/output";
 
 @Entity('like-comments')
+@Unique(['authorId', 'postId'])
 export class LikeComment {
   @PrimaryColumn('uuid')
   id: string;
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   authorId: string;
@@ -20,13 +21,13 @@ export class LikeComment {
   status: LikeCommentStatus
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   postId: string;
 
   @Column({
-    type: 'varchar',
+    type: 'uuid',
     nullable: false
   })
   commentId: string;

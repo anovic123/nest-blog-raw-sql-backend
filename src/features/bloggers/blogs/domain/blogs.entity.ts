@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 @Entity('blogs')
 export class Blog {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn('varchar')
   id: string;
 
   @Column({ type: "varchar", nullable: false })
