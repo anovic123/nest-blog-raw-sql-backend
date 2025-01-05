@@ -66,7 +66,6 @@ export class JwtService {
         refreshToken,
         refreshTokenExp: new Date(refreshTokenExp * 1000).toISOString(),
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
       return null;
     }
