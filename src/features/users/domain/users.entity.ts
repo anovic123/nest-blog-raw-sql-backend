@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
-import { BaseEntity } from '@core/entities/base.entity';
+
+import { BaseEntity } from "../../../core/entities/base.entity";
 
 @Entity('users')
 export class User extends BaseEntity {

@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { QuizGameQuestions } from "./quiz-game-questions";
+import { QuizGameQuestions } from "./quiz-game-questions.entity";
 
 @Entity('quiz-game-question')
 export class QuizGameQuestion {
@@ -9,6 +9,6 @@ export class QuizGameQuestion {
   @Column()
   body: string;
 
-  @OneToMany(() => QuizGameQuestions, (qgq) => qgq.question)
+  @OneToMany(() => QuizGameQuestions, (qgq) => qgq.question, { onDelete: 'CASCADE' })
   games: QuizGameQuestions[];
 }

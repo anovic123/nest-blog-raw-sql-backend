@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
-import { BaseEntity } from "@core/entities/base.entity";
+import { BaseEntity } from "../../../../core/entities/base.entity";
+
 import { BlogTypeorm } from "../../blogs/domain/blogs-typeorm.entity";
 
 @Entity('posts')
@@ -26,8 +27,8 @@ export class PostsTypeorm extends BaseEntity {
   content: string;
 
   @Column({
-    type: "uuid",
-    nullable: false,
+    type: "varchar",
+    nullable: false
   })
   
   blogId: string;
