@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "ty
 import { QuizUsers } from "./quiz-users.entity";
 import { QuizAnswers } from "./quiz-answers.entity";
 
-@Entity('Quiz-Players')
+@Entity('quiz-players')
 export class QuizPlayer {
   @PrimaryGeneratedColumn()
   id: number

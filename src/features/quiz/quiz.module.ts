@@ -7,8 +7,8 @@ import { QuizTypeormQueryRepository } from "./infra/quiz-typeorm-query.repositor
 import { QuizTypeormRepository } from "./infra/quiz-typeorm.repository";
 
 import { QuizAnswers } from "./domain/quiz-answers.entity";
-import { QuizGameQuestion } from "./domain/quiz-game-question";
-import { QuizGameQuestions } from "./domain/quiz-game-questions";
+import { QuizGameQuestion } from "./domain/quiz-game-question.entity";
+import { QuizGameQuestions } from "./domain/quiz-game-questions.entity";
 import { QuizGame } from "./domain/quiz-games.entity";
 import { QuizPlayer } from "./domain/quiz-player.entity";
 import { QuizUsers } from "./domain/quiz-users.entity";

@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity } from "typeorm";
 
-import { BaseEntity } from "@core/entities/base.entity";
+import { BaseEntity } from "../../../../core/entities/base.entity";
 
 @Entity('blogs')
 export class BlogTypeorm extends BaseEntity {

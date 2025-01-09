@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
-import { BaseEntity } from "@core/entities/base.entity";
+import { Column, Entity } from "typeorm";
+
+import { BaseEntity } from "../../../../core/entities/base.entity";
 
 @Entity('comments')
 export class Comments  extends BaseEntity {

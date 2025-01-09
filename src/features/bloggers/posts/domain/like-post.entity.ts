@@ -2,18 +2,17 @@ import { Entity, Column, Unique } from 'typeorm';
 
 import { LikePostStatus } from '../../blogs/api/models/output';
 
-import { BaseEntity } from '@core/entities/base.entity';
-
+import { BaseEntity } from "../../../../core/entities/base.entity";
 @Entity('like-posts')
 @Unique(['authorId', 'postId', 'id'])
 export class LikePosts extends BaseEntity {
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   authorId: string;
 
   @Column({ type: 'varchar', nullable: false })
   status: LikePostStatus;
 
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   postId: string;
 
   static createPostLike(body: {
@@ -32,7 +31,6 @@ export class LikePosts extends BaseEntity {
     newLike.authorId = authorId
     newLike.postId = postId
     newLike.status = status
-
 
     return newLike
   }
