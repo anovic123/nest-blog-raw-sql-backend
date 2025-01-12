@@ -38,7 +38,7 @@ const modules = [
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
-        autoLoadEntities: false, // true
+        autoLoadEntities: true, // true
         synchronize: false,
         ssl: {
           rejectUnauthorized: false,

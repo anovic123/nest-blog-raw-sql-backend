@@ -32,7 +32,7 @@ export class UsersController {
   @Get()
   @ApiQuery({ name: 'Pagination Query', type: PaginationUsersQueryDto  })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     schema: {
       allOf: [
         { $ref: getSchemaPath(PaginationOutput) },
