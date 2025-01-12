@@ -128,7 +128,6 @@ export class BlogsTypeormQueryRepository {
   } 
 
   public async mapPostOutput(post: any, userId?: string | null): Promise<BlogPostOutputModel> {
-    console.log("🚀 ~ BlogsTypeormQueryRepository ~ mapPostOutput ~ post:", post)
     // const likes = await this.likePostsRepository
     //   .createQueryBuilder('lp')
     //   .select([

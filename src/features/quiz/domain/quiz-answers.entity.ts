@@ -13,8 +13,8 @@ export class QuizAnswers {
   @ManyToOne(() => QuizPlayer, (qp) => qp.answers)
   player: QuizPlayer
 
-  @Column({ type: 'enum', enum: ['Correct', 'Incorrect'] })
-  status: 'Correct' | 'Incorrect'
+@Column({ type: 'text' })
+status: 'Correct' | 'Incorrect'
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;

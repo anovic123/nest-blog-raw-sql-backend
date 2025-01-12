@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ParsedQs } from 'qs';
+import { QuestionPublishedStatus } from 'src/features/quiz/api/models/output/question.view-dto';
 
 export class PaginationOutput<D> {
   @ApiProperty({ description: 'Total number of pages', example: 10 })
@@ -114,6 +115,20 @@ export class PaginationWithSearchLoginAndEmailTerm extends Pagination {
   }
 }
 
+export class PaginationQuestions extends Pagination {
+  @ApiProperty({ description: 'Body search term', nullable: true })
+  public readonly bodySearchTerm: string | null;
+  @ApiProperty({ description: 'Published status', nullable: false, default: QuestionPublishedStatus.ALL, enum: QuestionPublishedStatus })
+  public readonly publishedStatus: QuestionPublishedStatus;
+
+  constructor(query: ParsedQs, sortProperties: string[]) {
+    super(query, sortProperties)
+
+    this.bodySearchTerm = query.bodySearchTerm?.toString() || null;
+    this.publishedStatus = query.publishedStatus?.toString() as QuestionPublishedStatus || QuestionPublishedStatus.ALL
+  }
+}
+
 export type SortDirectionType = 'desc' | 'asc';
 
 export type PaginationType = {
@@ -163,7 +178,7 @@ export class PaginationQueryDto {
 
   @ApiProperty({
     description: 'Search term for name',
-    example: 'john',
+    example: '',
     required: false,
     nullable: true,
     type: String,
@@ -196,4 +211,26 @@ export class PaginationUsersQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   searchEmailTerm?: string | null;
+}
+
+export class PaginationQuestionsQueryDto extends PaginationQueryDto {
+  @ApiProperty({
+    description: 'body search term',
+    example: '',
+    required: false,
+    nullable: false,
+    type: String
+  })
+  @IsString()
+  bodySearchTerm?: string | null
+
+  @ApiProperty({
+    description: 'published status',
+    example: QuestionPublishedStatus.NOT_PUBLISHED,
+    required: false,
+    default: QuestionPublishedStatus.ALL,
+    enum: QuestionPublishedStatus
+  })
+  @IsEnum(QuestionPublishedStatus)
+  publishedStatus: QuestionPublishedStatus
 }
