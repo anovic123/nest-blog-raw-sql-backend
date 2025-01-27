@@ -1,8 +1,10 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 
 import { BaseEntity } from "../../../core/entities/base.entity";
+import { QuizPlayer } from '../../quiz/domain/quiz-player.entity';
+
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -23,6 +25,9 @@ export class User extends BaseEntity {
 
   @Column({ type: "varchar", nullable: false})
   expirationDate: Date;
+
+  @OneToMany(() => QuizPlayer, p => p.id)
+  players: QuizPlayer[];
 
   static createUser(login: User['login'], passwordHash: User['passwordHash'], email: User['email']): User {
     const newUser = new User()

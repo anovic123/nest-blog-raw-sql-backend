@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { isEnum, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ParsedQs } from 'qs';
 import { QuestionPublishedStatus } from 'src/features/quiz/api/models/output/question.view-dto';
 
@@ -124,8 +124,24 @@ export class PaginationQuestions extends Pagination {
   constructor(query: ParsedQs, sortProperties: string[]) {
     super(query, sortProperties)
 
-    this.bodySearchTerm = query.bodySearchTerm?.toString() || null;
-    this.publishedStatus = query.publishedStatus?.toString() as QuestionPublishedStatus || QuestionPublishedStatus.ALL
+    this.bodySearchTerm = query.bodySearchTerm?.toString() || "";
+    const status = query.publishedStatus?.toString();
+    if (status && isEnum(status, QuestionPublishedStatus)) {
+      this.publishedStatus = status as QuestionPublishedStatus;
+      } else {
+        this.publishedStatus = QuestionPublishedStatus.ALL; 
+      }  
+    }
+
+  static getQuizQuestions(status: QuestionPublishedStatus): boolean | null {
+      switch (status) {
+        case QuestionPublishedStatus.PUBLISHED:
+          return true;
+        case QuestionPublishedStatus.NOT_PUBLISHED:
+          return false;
+        default:
+          return null;
+      }
   }
 }
 
@@ -211,26 +227,4 @@ export class PaginationUsersQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   searchEmailTerm?: string | null;
-}
-
-export class PaginationQuestionsQueryDto extends PaginationQueryDto {
-  @ApiProperty({
-    description: 'body search term',
-    example: '',
-    required: false,
-    nullable: false,
-    type: String
-  })
-  @IsString()
-  bodySearchTerm?: string | null
-
-  @ApiProperty({
-    description: 'published status',
-    example: QuestionPublishedStatus.NOT_PUBLISHED,
-    required: false,
-    default: QuestionPublishedStatus.ALL,
-    enum: QuestionPublishedStatus
-  })
-  @IsEnum(QuestionPublishedStatus)
-  publishedStatus: QuestionPublishedStatus
 }

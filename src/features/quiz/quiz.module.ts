@@ -19,6 +19,12 @@ import { CreateQuestionUseCase } from "./application/admin-use-cases/create-ques
 import { DeleteQuestionUseCase } from "./application/admin-use-cases/delete-question.use-case";
 import { UpdateQuestionUseCase } from "./application/admin-use-cases/update-question.use-case";
 import { PublishQuestionUseCase } from "./application/admin-use-cases/publish-question.use-case";
+import { CreateGameUseCase } from "./application/pairs-use-cases/create-game.use-case";
+import { QuizGameTypeormRepository } from "./infra/quiz-game-typeorm.repository";
+import { UsersTypeormRepository } from "../users/infra/users-typeorm.repository";
+import { QuizPlayerTypeormRepository } from "./infra/quiz-player-typeorm.repository";
+import { User } from "../users/domain/users.entity";
+import { QuizTypeormRepository } from "./infra/quiz-typeorm.repository";
 
 @Module({
   imports: [
@@ -28,7 +34,8 @@ import { PublishQuestionUseCase } from "./application/admin-use-cases/publish-qu
       QuizGameQuestions,
       QuizGame,
       QuizPlayer,
-      QuizUsers
+      QuizUsers,
+      User
     ]),
     CqrsModule
   ],
@@ -41,8 +48,13 @@ import { PublishQuestionUseCase } from "./application/admin-use-cases/publish-qu
     DeleteQuestionUseCase,
     UpdateQuestionUseCase,
     PublishQuestionUseCase,
+    CreateGameUseCase,
+    QuizGameTypeormRepository,
     SaQuizTypeormQueryRepository,
-    SaQuizTypeormRepository
+    SaQuizTypeormRepository,
+    UsersTypeormRepository,
+    QuizPlayerTypeormRepository,
+    QuizTypeormRepository
   ],
   exports: []
 })

@@ -28,12 +28,20 @@ export class SaQuizTypeormRepository {
   }
 
   public async findQuestion(id: QuizGameQuestion['id']): Promise<QuizGameQuestion | null> {
-    const res =  await this.saQuizGameQuestionRepository.createQueryBuilder('s')
+    const res = await this.saQuizGameQuestionRepository.createQueryBuilder('s')
     .select(['s.*'])
     .where("s.id = :id", { id })
     .getOne()
 
     return res || null;
+  }
+
+  public async questionIsExist(id: QuizGameQuestion['id']): Promise<boolean> {
+    const count = await this.saQuizGameQuestionRepository.count({
+      where: { id }
+    })
+    
+    return count > 0
   }
 
   public async updateQuestion(id: QuizGameQuestion['id'], body: UpdateQuestionDto): Promise<boolean> {

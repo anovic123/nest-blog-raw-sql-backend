@@ -23,7 +23,7 @@ export class UpdateQuestionUseCase implements ICommandHandler<UpdateQuestionComm
   async execute(command: UpdateQuestionCommand): Promise<void> {
     const { id, body } = command;
 
-    const question = await this.saQuizTypeormRepository.findQuestion(id);
+    const question = await this.saQuizTypeormRepository.questionIsExist(id);
 
     if (!question) {
       throw new NotFoundException(`Question with id ${id} not found`);

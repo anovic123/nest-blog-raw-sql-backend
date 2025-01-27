@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ApiBasicAuth, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags, getSchemaPath } from "@nestjs/swagger";
 import { CommandBus } from "@nestjs/cqrs";
 
@@ -6,7 +6,7 @@ import { BasicAuthGuard } from "@core/guards/auth-basic.guards";
 
 import { SaQuizTypeormQueryRepository } from "../infra/sa-quiz-typeorm-query.repository";
 
-import { PaginationOutput, PaginationQuestions, PaginationQuestionsQueryDto } from "src/base/models/pagination.base.model";
+import { PaginationOutput, PaginationQuestions } from "src/base/models/pagination.base.model";
 
 import { SortingPropertiesType } from "src/base/types/sorting-properties.type";
 
@@ -35,7 +35,7 @@ export class QuizAdminController {
   ) {}
 
   @ApiExtraModels(PaginationOutput, QuestionViewDto)
-  @ApiQuery({ name: "Pagination Query", type: PaginationQuestionsQueryDto })
+  @ApiQuery({ name: "Pagination Query", type: "" })
   @ApiResponse({
     status: HttpStatus.OK,
     schema: {
@@ -59,6 +59,7 @@ export class QuizAdminController {
     description: "Unauthorized"
   })
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Returns all questions with pagination and filtering"
   })
@@ -68,6 +69,7 @@ export class QuizAdminController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create question"
   })
@@ -79,6 +81,7 @@ export class QuizAdminController {
   }
 
   @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete question"
   })
@@ -90,6 +93,7 @@ export class QuizAdminController {
   }
 
   @Put('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Update question"
   })
@@ -104,7 +108,8 @@ export class QuizAdminController {
     return this.commandBus.execute(new UpdateQuestionCommand(id, body))
   }
 
-  @Put('/:id')
+  @Put('/:id/publish')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Publish/unpublish question"
   })

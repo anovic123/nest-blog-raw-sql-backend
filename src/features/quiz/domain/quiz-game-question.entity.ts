@@ -18,6 +18,12 @@ export class QuizGameQuestion extends BaseEntity {
   @Column()
   published: boolean;
 
+  @Column()
+  createdAt: Date;
+
+  @Column({ nullable: true })
+  updatedAt: Date;
+
   @OneToMany(() => QuizGameQuestions, (qgq) => qgq.question, { onDelete: 'CASCADE' })
   games: QuizGameQuestions[];
 

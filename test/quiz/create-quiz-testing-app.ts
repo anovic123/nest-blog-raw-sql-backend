@@ -1,12 +1,17 @@
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { CreateQuestionUseCase } from 'src/features/quiz/application/admin-use-cases/create-question.use-case';
+import { DeleteQuestionUseCase } from 'src/features/quiz/application/admin-use-cases/delete-question.use-case';
+import { PublishQuestionUseCase } from 'src/features/quiz/application/admin-use-cases/publish-question.use-case';
+import { UpdateQuestionUseCase } from 'src/features/quiz/application/admin-use-cases/update-question.use-case';
+
 import { QuizAnswers } from 'src/features/quiz/domain/quiz-answers.entity';
 import { QuizGameQuestion } from 'src/features/quiz/domain/quiz-game-question.entity';
 import { QuizGameQuestions } from 'src/features/quiz/domain/quiz-game-questions.entity';
 import { QuizGame } from 'src/features/quiz/domain/quiz-games.entity';
 import { QuizPlayer } from 'src/features/quiz/domain/quiz-player.entity';
 import { QuizUsers } from 'src/features/quiz/domain/quiz-users.entity';
-
 
 import { SaQuizTypeormRepository } from 'src/features/quiz/infra/sa-quiz-typeorm.repository';
 
@@ -40,7 +45,7 @@ export async function createQuizTestingApp() {
             QuizUsers
         ]),
     ],
-    providers: [ SaQuizTypeormRepository, SaQuizTypeormRepository ]
+    providers: [ SaQuizTypeormRepository, SaQuizTypeormRepository, CreateQuestionUseCase, DeleteQuestionUseCase, PublishQuestionUseCase, UpdateQuestionUseCase ]
   }).compile();
 
   const app = moduleFixture.createNestApplication();

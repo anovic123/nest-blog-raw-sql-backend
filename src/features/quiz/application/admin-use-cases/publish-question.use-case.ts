@@ -21,9 +21,9 @@ export class PublishQuestionUseCase implements ICommandHandler<PublishQuestionCo
   ) {}
 
   async execute(command: PublishQuestionCommand): Promise<void> {
-    const { body, id } = command;
+    const { id, body } = command;
 
-    const question = await this.saQuizTypeormRepository.findQuestion(id);
+    const question = await this.saQuizTypeormRepository.questionIsExist(id);
 
     if (!question) {
       throw new NotFoundException(`Question with id ${id} not found`);
