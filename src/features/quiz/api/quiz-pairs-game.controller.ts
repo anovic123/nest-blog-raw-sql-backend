@@ -1,15 +1,19 @@
 import { Body, Controller, Get, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {  ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CommandBus } from "@nestjs/cqrs";
 
+import { AuthGuard } from "@core/guards/auth.guard";
+
 import { SaQuizTypeormQueryRepository } from "../infra/sa-quiz-typeorm-query.repository";
+
 import { RequestWithUser } from "src/base/types/request";
+
 import { GameViewDto } from "./models/output/game.view-dto";
+
 import { CreateGameCommand } from "../application/pairs-use-cases/create-game.use-case";
 
 @ApiTags('PairQuizGame')
-@ApiBearerAuth()
-@UseGuards(ApiBearerAuth)
+@UseGuards(AuthGuard)
 @Controller('pair-game-quiz/pairs')
 export class QuizPairsGameController {
   constructor (
@@ -18,6 +22,7 @@ export class QuizPairsGameController {
   ) {}
 
   @Get('/my-current')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Returns current unfinished user game"
   })
@@ -30,12 +35,14 @@ export class QuizPairsGameController {
   }
 
   @Get('/:id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Returns game by id"
   })
   async getGameById() {}
 
   @Post("/connection")
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Connect current user to existing random pending pair or create new pair which will be waiting second player"
   })
@@ -61,6 +68,7 @@ export class QuizPairsGameController {
   }
 
   @Post("/my-current/answers")
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Send answer for next not answered question in active pair"
   })

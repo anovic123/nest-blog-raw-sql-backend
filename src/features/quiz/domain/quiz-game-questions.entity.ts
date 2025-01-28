@@ -4,8 +4,8 @@ import { QuizGameQuestion } from './quiz-game-question.entity';
 
 @Entity('quiz-game-questions')
 export class QuizGameQuestions {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   questionNumber: number;

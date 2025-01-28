@@ -16,7 +16,7 @@ export class QuizPlayerTypeormRepository {
   public async createPlayer(playerDto: CreatePlayerDto): Promise<InsertResult> {
     const newPlayer = await this.quizPlayerTypeormRepository.createQueryBuilder('p').insert().values({
       id: playerDto.id,
-      userId: playerDto.userId,
+      user: { id: playerDto.userId },
       login: playerDto.login,
       gameId: playerDto.gameId
     }).execute()

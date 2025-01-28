@@ -39,7 +39,7 @@ const modules = [
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
         autoLoadEntities: true, // true
-        synchronize: false,
+        synchronize: true,
         ssl: {
           rejectUnauthorized: false,
         },

@@ -7,7 +7,7 @@ import { QuizGame } from "./quiz-games.entity";
 
 @Entity('quiz-players')
 export class QuizPlayer {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ default: 0 })
@@ -20,19 +20,17 @@ export class QuizPlayer {
   finishAnswersDate: Date;
 
   @Column({ default: true })
-  isActive: true;
+  isActive: boolean;
 
   @ManyToOne(() => User, (u) => u.players, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  user: User
-  @Column()
-  userId: string;
+  @JoinColumn()  // Automatically creates the "userId" column
+  user: User;
   @Column()
   login: string;
 
   @ManyToOne(() => QuizAnswers, (qa) => qa.player)
   @JoinColumn()
-  answers: QuizAnswers[];
+  answers: QuizAnswers[]; 
   @Column({ nullable: true })
   answersId: string[];
 
@@ -40,7 +38,4 @@ export class QuizPlayer {
   game: QuizGame;
   @Column({ nullable: true })
   gameId: string;
-
-  // @OneToMany(() => QuizAnswers, (qa) => qa.player)
-  // answers: QuizAnswers
 }

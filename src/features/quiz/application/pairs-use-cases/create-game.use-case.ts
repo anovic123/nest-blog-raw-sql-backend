@@ -39,18 +39,18 @@ export class CreateGameUseCase implements ICommandHandler<CreateGameCommand> {
         throw new ForbiddenException('Current user is already participating in active pair');
       }
       
-      // true or false
       const pendingGame = await this.quizGameTypeormRepository.getPendingGame()
 
       const user = await this.usersTypeormRepository.findUserById(userId);
+
       if (!user) {
         throw new NotFoundException('user not found');
       }
 
       const playerDTO: CreatePlayerDto = {
         id: randomUUID(),
-        userId: user.id,
-        login: user.login,
+        userId: user?.id,
+        login: user?.login,
         gameId: pendingGame?.id ? pendingGame?.id : '' 
       }
 
@@ -89,12 +89,12 @@ export class CreateGameUseCase implements ICommandHandler<CreateGameCommand> {
           pairCreatedData: new Date(),
           firstPlayerId: playerDTO.id
         }
+        console.log("🚀 ~ CreateGameUseCase ~ execute ~ dto:", dto)
 
         await this.quizPlayerTypeormRepository.updatePlayerGameId(playerDTO.id, dto.id)
 
         newGame = await this.quizGameTypeormRepository.createGame(dto)
       }
-
 
       if (!newGame) {
         throw new InternalServerErrorException('Something went wrong')

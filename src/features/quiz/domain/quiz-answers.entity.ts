@@ -3,8 +3,8 @@ import { QuizPlayer } from "./quiz-player.entity";
 
 @Entity('quiz-answers')
 export class QuizAnswers {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column()
   questionId: number

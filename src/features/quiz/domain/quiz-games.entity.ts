@@ -1,4 +1,4 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, OneToMany, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, JoinTable } from 'typeorm';
 import { QuizPlayer } from './quiz-player.entity';
 import { QuizGameQuestions } from './quiz-game-questions.entity';
 
@@ -10,7 +10,7 @@ export enum GameStatus {
 
 @Entity('quiz-games')
 export class QuizGame {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ type: 'enum', enum: GameStatus })
@@ -28,15 +28,16 @@ export class QuizGame {
   @OneToOne(() => QuizPlayer, (p) => p.game, { onDelete: 'CASCADE' })
   @JoinColumn()
   firstPlayer: QuizPlayer
-  @Column()
+  @Column({ type: 'uuid' })
   firstPlayerId: string;
 
   @OneToOne(() => QuizPlayer, (p) => p.game, { nullable: true })
   @JoinColumn()
   secondPlayer: QuizPlayer | null;
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   secondPlayerId: string;
 
   @OneToMany(() => QuizGameQuestions, (qgq) => qgq.game, { cascade: true })
+  @JoinTable()
   questions: QuizGameQuestions[];
 }

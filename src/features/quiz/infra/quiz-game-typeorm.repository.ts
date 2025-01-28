@@ -19,26 +19,34 @@ export class QuizGameTypeormRepository {
   ) {}
 
   public async createGame(dto: CreateGameDto): Promise<GameViewDto | null> {
-    const newGame = await this.quizGameTypeormRepository.createQueryBuilder('n').insert().values({
+    console.log("🚀 ~ QuizGameTypeormRepository ~ createGame ~ dto:", dto)
+    await this.quizGameTypeormRepository
+    .createQueryBuilder()
+    .insert()
+    .values({
       id: dto.id,
       status: dto.status,
       pairCreatedDate: dto.pairCreatedData,
-      firstPlayerId: dto.firstPlayerId,
-    }).execute();
-
+      firstPlayerId: String(dto.firstPlayerId),
+    })
+    .execute();
+  
     const game = await this.quizGameTypeormRepository.findOne({
       where: { id: dto.id }
     })
+    console.log("🚀 ~ QuizGameTypeormRepository ~ createGame ~ game123:", game)
 
     if (!game) return null
 
-    const player = await this.quizGameTypeormRepository.createQueryBuilder('p').addSelect((subQuery) => {
+    const player = await this.quizPlayerTypeormRepository.createQueryBuilder('p').addSelect((subQuery) => {
       return subQuery
-        .select('u.login', 'login')
-        .from('users', 'u')
-        .where('u.id = :userId', { userId: dto.firstPlayerId });
+      .select('u.login', 'login')
+      .from('users', 'u')
+      .where('u.id = :userId', { userId: dto.firstPlayerId });
     }).where('p.id = :playerId', { playerId: game.firstPlayerId }).getRawOne();
-
+    
+    console.log("🚀 ~ QuizGameTypeormRepository ~ player ~ player:", player)
+    
     const pendingGameView: GameViewDto = {
       id: game.id,
       firstPlayerProgress: {
@@ -56,6 +64,7 @@ export class QuizGameTypeormRepository {
       startGameDate: game.startGameDate,
       finishGameDate: game.finishGameDate
     }
+    console.log("🚀 ~ QuizGameTypeormRepository ~ createGame ~ pendingGameView:", pendingGameView)
 
     return pendingGameView;
   }
@@ -95,16 +104,22 @@ export class QuizGameTypeormRepository {
   }
   
 
-  public async getActiveGame(userId: string) {
-    const playerId = await this.quizGameTypeormRepository.createQueryBuilder('p').leftJoinAndSelect('p.user', 'u').where('u.id = :userId', { userId }).andWhere('p.isActive = :isActive', { isActive: true }).select('p.id', 'playerId').getRawOne();
+  public async getActiveGame(userId: string): Promise<boolean> {
+    const playerData = await this.quizPlayerTypeormRepository
+    .createQueryBuilder('p')
+    .leftJoin('p.user', 'u')
+    .where('u.id = :userId', { userId })
+    .andWhere('p.isActive = :isActive', { isActive: true })
+    .select('p.id', 'playerId')
+    .getRawOne();
 
-    // 404 Not FOUND
-
+    if (!playerData) return false;
+    
+    const playerId = playerData.playerId;
     const game = await this.getActiveGameDetails(playerId, GameStatus.Active);
-
-    // 404 Not Found
-
-    return false
+    
+    return Boolean(game);
+  
   }
 
   public async getPendingGame(): Promise<QuizGame | null> {
@@ -115,12 +130,14 @@ export class QuizGameTypeormRepository {
     });
   }
 
-  public async addPlayerToGame(dto: AddPlayerDto) {
+  public async addPlayerToGame(dto: AddPlayerDto): Promise<boolean> {
     const res = await this.quizGameTypeormRepository.createQueryBuilder('q').update().set({
       secondPlayerId: dto.secondPlayerId,
       startGameDate: new Date(),
       status: GameStatus.Active
-    })
+    }).execute();
+
+    return true
   }
 
 }
