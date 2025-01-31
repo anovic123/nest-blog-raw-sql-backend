@@ -1,10 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Req, UseGuards } from "@nestjs/common";
 import {  ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CommandBus } from "@nestjs/cqrs";
 
 import { AuthGuard } from "@core/guards/auth.guard";
-
-import { SaQuizTypeormQueryRepository } from "../infra/sa-quiz-typeorm-query.repository";
 
 import { RequestWithUser } from "src/base/types/request";
 
@@ -12,12 +10,14 @@ import { GameViewDto } from "./models/output/game.view-dto";
 
 import { CreateGameCommand } from "../application/pairs-use-cases/create-game.use-case";
 
+import { QuizGameTypeormQueryRepository } from "../infra/quiz-game-typeorm-query.repository";
+
 @ApiTags('PairQuizGame')
 @UseGuards(AuthGuard)
 @Controller('pair-game-quiz/pairs')
 export class QuizPairsGameController {
   constructor (
-    private readonly quizTypeormQueryRepository: SaQuizTypeormQueryRepository,
+    private readonly quizGameTypeormQueryRepository: QuizGameTypeormQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -31,7 +31,13 @@ export class QuizPairsGameController {
   ) {
     const user = request['user']
 
-    return this.quizTypeormQueryRepository.getActiveOrPendingQuizGame(user?.userId)
+    const res = await this.quizGameTypeormQueryRepository.getActiveOrPendingGame(user?.userId)
+
+    if (!res) {
+      throw new NotFoundException("Game not found")
+    } else {
+      return res
+    }
   }
 
   @Get('/:id')
@@ -39,7 +45,12 @@ export class QuizPairsGameController {
   @ApiOperation({
     summary: "Returns game by id"
   })
-  async getGameById() {}
+  async getGameById(
+    @Param('id') gameId: string,
+    @Req() request: RequestWithUser,
+  ) {
+
+  }
 
   @Post("/connection")
   @ApiBearerAuth()

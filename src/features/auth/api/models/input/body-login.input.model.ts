@@ -15,7 +15,7 @@ export class BodyLoginModel {
   loginOrEmail: string;
   @ApiProperty({
     description: 'password',
-    example: 'asdasasd1223',
+    example: '1232112313eqwqwe',
     required: true,
     type: String,
   })

@@ -59,8 +59,4 @@ export class SaQuizTypeormQueryRepository {
       items: sortedQuestions.map(q => QuestionViewDto.mapToView(q))
     };
   }
-
-  public async getActiveOrPendingQuizGame(userId: string) {
-
-  }
 }

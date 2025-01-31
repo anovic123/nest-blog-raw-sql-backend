@@ -19,7 +19,6 @@ export class QuizGameTypeormRepository {
   ) {}
 
   public async createGame(dto: CreateGameDto): Promise<GameViewDto | null> {
-    console.log("🚀 ~ QuizGameTypeormRepository ~ createGame ~ dto:", dto)
     await this.quizGameTypeormRepository
     .createQueryBuilder()
     .insert()
@@ -34,7 +33,6 @@ export class QuizGameTypeormRepository {
     const game = await this.quizGameTypeormRepository.findOne({
       where: { id: dto.id }
     })
-    console.log("🚀 ~ QuizGameTypeormRepository ~ createGame ~ game123:", game)
 
     if (!game) return null
 
@@ -44,8 +42,6 @@ export class QuizGameTypeormRepository {
       .from('users', 'u')
       .where('u.id = :userId', { userId: dto.firstPlayerId });
     }).where('p.id = :playerId', { playerId: game.firstPlayerId }).getRawOne();
-    
-    console.log("🚀 ~ QuizGameTypeormRepository ~ player ~ player:", player)
     
     const pendingGameView: GameViewDto = {
       id: game.id,
