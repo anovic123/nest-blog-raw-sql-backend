@@ -87,4 +87,3 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 migrations generate:
 yarn migration:generate ./migrations/name
-
