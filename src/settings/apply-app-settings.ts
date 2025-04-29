@@ -6,11 +6,10 @@ import {
 } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
-
-import { AppModule } from 'src/app.module';
+import { CoreModule } from '@core/core.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { HttpExceptionFilter } from '../core/exception-filters/http-exception-filter';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function swaggerSetup(app: INestApplication) {
   const config = new DocumentBuilder()
@@ -28,7 +27,7 @@ export function swaggerSetup(app: INestApplication) {
 }
 
 export const applyAppSettings = (app: INestApplication) => {
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  useContainer(app.select(CoreModule), { fallbackOnErrors: true });
 
   setAppPipes(app);
 

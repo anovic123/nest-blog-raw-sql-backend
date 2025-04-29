@@ -10,41 +10,17 @@ export class TestingRepository {
 
   public async deleteAll(): Promise<boolean> {
     try {
-      const userTable = `
-        TRUNCATE TABLE "users" RESTART IDENTITY CASCADE
-      `;
+      const tables = await this.dataSource.query(`
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+        `);
 
-      const devicesTable = `
-        TRUNCATE TABLE "devices" RESTART IDENTITY CASCADE
-      `
-
-      const blogsTable = `
-        TRUNCATE TABLE "blogs" RESTART IDENTITY CASCADE
-      `
-
-      const postsTable = `
-        TRUNCATE TABLE "posts" RESTART IDENTITY CASCADE
-      `
-
-      const commentsTable = `
-        TRUNCATE TABLE "comments" RESTART IDENTITY CASCADE
-      `
-
-      const likesPostsTable = `
-        TRUNCATE TABLE "like-posts" RESTART IDENTITY CASCADE
-      `
-
-      const likeCommentsTable = `
-        TRUNCATE TABLE "like-comments" RESTART IDENTITY CASCADE
-      `
-
-      await this.dataSource.query(userTable)
-      await this.dataSource.query(devicesTable)
-      await this.dataSource.query(blogsTable)
-      await this.dataSource.query(postsTable)
-      await this.dataSource.query(commentsTable)
-      await this.dataSource.query(likesPostsTable)
-      await this.dataSource.query(likeCommentsTable)
+    for (const { table_name } of tables) {
+      await this.dataSource.query(
+        `TRUNCATE TABLE public."${table_name}" CASCADE`,
+      );
+    }
 
       return true
     } catch (error) {

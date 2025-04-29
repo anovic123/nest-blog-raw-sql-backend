@@ -2,47 +2,85 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CqrsModule } from "@nestjs/cqrs";
 
-import { QuizAdminController } from "./api/quiz-admin.controller";
-import { QuizPairsGameController } from "./api/quiz-pairs-game.controller";
+import { Player } from "./domain/player.entity";
+import { Answer } from "./domain/answer.entity";
+import { Game } from "./domain/game.entity";
+import { GameQuestion } from "./domain/game.question.entity";
+import { Question } from "./domain/question.entity";
 
-import { SaQuizTypeormQueryRepository } from "./infra/sa-quiz-typeorm-query.repository";
-import { SaQuizTypeormRepository } from "./infra/sa-quiz-typeorm.repository";
+import { QuizSaController } from "./api/controllers/quiz.sa.controller";
+import { PairGameQuizController } from "./api/controllers/pair.game.quiz.controller";
 
-import { QuizAnswers } from "./domain/quiz-answers.entity";
-import { QuizGameQuestion } from "./domain/quiz-game-question.entity";
-import { QuizGameQuestions } from "./domain/quiz-game-questions.entity";
-import { QuizGame } from "./domain/quiz-games.entity";
-import { QuizPlayer } from "./domain/quiz-player.entity";
-import { QuizUsers } from "./domain/quiz-users.entity";
+import { QuestionsRepository } from "./infra/questions.repository";
+import { GameRepository } from "./infra/game.repository";
+import { GameQueryRepository } from "./infra/game.query-repository";
+import { QuestionsQueryRepository } from "./infra/questions.query-repository";
+import { UsersRepository } from "../users/infra/users.repository";
 
-import { CreateQuestionUseCase } from "./application/admin-use-cases/create-question.use-case";
-import { DeleteQuestionUseCase } from "./application/admin-use-cases/delete-question.use-case";
-import { UpdateQuestionUseCase } from "./application/admin-use-cases/update-question.use-case";
-import { PublishQuestionUseCase } from "./application/admin-use-cases/publish-question.use-case";
+import { GameExpirationCron } from "./application/cron/game-expiration-cron.cron";
+
+import { CreateQuestionUseCase } from "./application/use-cases/questions/create-question.use-case";
+import { DeleteQuestionUseCase } from "./application/use-cases/questions/delete-question.use-case";
+import { UpdateQuestionUseCase } from "./application/use-cases/questions/update-question.use-case";
+import { UpdatePublishQuestionUseCase } from "./application/use-cases/questions/update-publish-question.use-case";
+
+import { ConnectionToGameUseCase } from "./application/use-cases/game/connection-to-game.use-case";
+import { IsGameExistsAndUserParticipantUseCase } from "./application/use-cases/game/is-game-exists-and-user-participant.use-case";
+import { GetCurrentGameIdUseCase } from "./application/use-cases/game/get-current-game-id.use-case";
+import { FinishExpiredGamesUseCase } from "./application/use-cases/game/finish-expired-games.use-case";
+import { CheckTheAnswersUseCase } from "./application/use-cases/game/check-the-answers.use-case";
+
+const useCasesForQuestion = [
+  CreateQuestionUseCase,
+  DeleteQuestionUseCase,
+  UpdateQuestionUseCase,
+  UpdatePublishQuestionUseCase,
+];
+
+const useCasesForGame = [
+  ConnectionToGameUseCase,
+  CheckTheAnswersUseCase,
+  IsGameExistsAndUserParticipantUseCase,
+  GetCurrentGameIdUseCase,
+  FinishExpiredGamesUseCase,
+];
+
+const repositories = [
+  UsersRepository,
+  QuestionsRepository,
+  GameRepository,
+]
+
+const queryRepositories = [
+  GameQueryRepository,
+  QuestionsQueryRepository
+]
+
+const cron = [
+  GameExpirationCron
+]
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      QuizAnswers,
-      QuizGameQuestion,
-      QuizGameQuestions,
-      QuizGame,
-      QuizPlayer,
-      QuizUsers
+      Player,
+      Answer,
+      Game,
+      GameQuestion,
+      Question
     ]),
     CqrsModule
   ],
   controllers: [
-    QuizAdminController,
-    QuizPairsGameController
+    QuizSaController,
+    PairGameQuizController
   ],
   providers: [
-    CreateQuestionUseCase,
-    DeleteQuestionUseCase,
-    UpdateQuestionUseCase,
-    PublishQuestionUseCase,
-    SaQuizTypeormQueryRepository,
-    SaQuizTypeormRepository
+    ...useCasesForQuestion,
+    ...useCasesForGame,
+    ...repositories,
+    ...queryRepositories,
+    ...cron
   ],
   exports: []
 })
